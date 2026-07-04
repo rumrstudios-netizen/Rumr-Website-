@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300;1,14..32,400;1,14..32,700;1,14..32,900&family=Playfair+Display:ital,wght@1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  ═══════════════════════════════════════════════════
+  RUMR BOTTLE-GREEN × REC RED — Global Design Tokens
+  ═══════════════════════════════════════════════════
+*/
+:root {
+  --rumr-bg:         #070908;
+  --rumr-bg2:        #0B1210;
+  --rumr-bg3:        #0E1F19;
+  --rumr-surface:    #142B22;
+  --rumr-green:      #0A3D32;
+  --rumr-green-dark: #062B23;
+  --rumr-green-h:    #14634D;
+  --rumr-green-soft: #0A3D32;
+  --rumr-text:       #F3F0E8;
+  --rumr-text2:      #A5B2AA;
+  --rumr-text-muted: #748178;
+  --rumr-border:     #29483B;
+  --rumr-red:        #FF0000;
+  --rumr-red-h:      #B80000;
+  --rumr-red-dark:   #780000;
+  --rumr-red-soft:   rgba(255, 0, 0, 0.55);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background-color: var(--rumr-bg);
+  color: var(--rumr-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Editorial serif — use only on select italic emphasis words */
+.serif-italic {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 800;
+}
+
+::selection {
+  background-color: var(--rumr-green);
+  color: var(--rumr-text);
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-red {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--rumr-red);
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+  text-decoration: none;
+}
+.btn-red:hover { background-color: var(--rumr-red-h); }
+
+.btn-emerald {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--rumr-text);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  border: 1px solid var(--rumr-green);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+  text-decoration: none;
+}
+.btn-emerald:hover {
+  background-color: rgba(6, 43, 35, 0.4);
+  border-color: var(--rumr-green-h);
+}
+
+/* ── Glass / card ─────────────────────────────────── */
+.glass-panel {
+  background: rgba(20, 43, 34, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--rumr-border);
+}
+
+/* ── Film grain overlay ───────────────────────────── */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+  filter: contrast(180%) brightness(120%);
+}
+
+/* ── Glow utilities ───────────────────────────────── */
+.emerald-glow { box-shadow: 0 0 60px rgba(10, 61, 50, 0.18); }
+.red-glow     { box-shadow: 0 0 40px rgba(255, 0, 0, 0.15); }
+
+/* ── Custom scrollbar ─────────────────────────────── */
+::-webkit-scrollbar        { width: 3px; }
+::-webkit-scrollbar-track  { background: var(--rumr-bg); }
+::-webkit-scrollbar-thumb  { background: var(--rumr-border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rumr-green-h); }
+
+/* ── Scroll reveal keyframe ───────────────────────── */
+@keyframes fadeUp {
+  from { transform: translateY(32px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Respect reduced motion ───────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

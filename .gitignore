@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+*.local
+
+# Large video files (host externally)
+public/videos/*.mp4
+public/videos/*.mov
+public/videos/*.avi
+public/videos/*.mkv
+rumr-studios-deploy/videos/
