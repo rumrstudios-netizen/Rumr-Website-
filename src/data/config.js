@@ -118,7 +118,7 @@ export const SITE_CONFIG = {
       year: "2024",
       description: "Capturing the energy of a high-octane brand activation.",
       image: "https://img.youtube.com/vi/DFhenEsm1MA/maxresdefault.jpg",
-      video: "/videos/Joel X Millie Reel- Puma.mp4",
+      video: "/videos/joel-x-millie-reel-puma.mp4",
     },
     {
       id: "puma-tom",
@@ -127,7 +127,7 @@ export const SITE_CONFIG = {
       year: "2024",
       description: "High-energy brand film capturing the spirit of Puma India.",
       image: "https://img.youtube.com/vi/DFhenEsm1MA/maxresdefault.jpg",
-      video: "/videos/Tom Reel- Puma India .mp4",
+      video: "/videos/tom-reel-puma-india.mp4",
     },
     {
       id: "knox-finance",
@@ -137,7 +137,7 @@ export const SITE_CONFIG = {
       description: "A premium visual identity for a modern fintech leader.",
       image:
         "https://images.unsplash.com/photo-1551288049-bbbda5366391?auto=format&fit=crop&q=80&w=1200",
-      video: "/videos/KNOX REEL 2 B.mp4",
+      video: "/videos/knox-reel-2-b.mp4",
     },
     {
       id: "fashion-editorial",
@@ -157,7 +157,7 @@ export const SITE_CONFIG = {
       description: "A bold campaign film for Campus, built to grab attention.",
       image:
         "https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&q=80&w=1200",
-      video: "/videos/Campus Campaign Cut 1.mp4",
+      video: "/videos/campus-campaign-cut-1.mp4",
     },
   ],
   process: [
