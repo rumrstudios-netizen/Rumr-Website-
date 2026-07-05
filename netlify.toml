@@ -2,7 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
-# SPA routing — serve index.html for all routes
+# Serve static video files directly
+[[redirects]]
+  from = "/videos/*"
+  to = "/videos/:splat"
+  status = 200
+
+# SPA routing — serve index.html for all other routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
