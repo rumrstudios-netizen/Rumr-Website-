@@ -108,7 +108,7 @@ export default function HomePage() {
             {/* Main headline */}
             <h1
               style={{
-                fontSize: "clamp(58px, 11.5vw, 155px)",
+                fontSize: "clamp(42px, 8.5vw, 110px)",
                 fontWeight: 900,
                 letterSpacing: "-0.04em",
                 textTransform: "uppercase",
@@ -117,16 +117,15 @@ export default function HomePage() {
                 margin: 0,
               }}
             >
-              MAKE YOUR
+              EVERY GREAT STORY
               <br />
+              STARTS AS A{" "}
               <em
                 className="serif-italic"
                 style={{ color: "var(--rumr-green-soft)" }}
               >
-                BRAND
+                RUMR.
               </em>
-              <br />
-              MOVE.
             </h1>
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mt-4">
