@@ -210,13 +210,20 @@ export default function ContactPage() {
     setIsLoading(true);
     setSubmitError(null);
     try {
-      // ── INTEGRATION PLACEHOLDER ──────────────────────────────
-      // Replace the fetch below with your real endpoint:
-      // Option A: Formspree  → fetch("https://formspree.io/f/YOUR_ID", ...)
-      // Option B: Resend API → POST /api/contact (your backend route)
-      // Option C: EmailJS   → emailjs.send(serviceId, templateId, formData)
-      // ────────────────────────────────────────────────────────
-      await new Promise((resolve) => setTimeout(resolve, 1400)); // simulated delay
+      const response = await fetch("https://formspree.io/f/xdarbqye", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit form");
+      }
+      
+      await response.json();
       setIsSubmitted(true);
     } catch (err) {
       setSubmitError(
