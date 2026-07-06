@@ -117,9 +117,11 @@ export default function HomePage() {
                 margin: 0,
               }}
             >
-              EVERY GREAT STORY
+              EVERY GREAT
               <br />
-              STARTS AS A{" "}
+              STORY STARTS
+              <br />
+              AS A{" "}
               <em
                 className="serif-italic"
                 style={{ color: "var(--rumr-green-soft)" }}
