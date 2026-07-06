@@ -219,12 +219,16 @@ export default function ContactPage() {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        const errorData = await response.json();
+        if (errorData.errors) {
+          throw new Error(errorData.errors.map(error => error.message).join(", "));
+        } else {
+          throw new Error("Form submission failed.");
+        }
       }
-      
-      await response.json();
-      setIsSubmitted(true);
     } catch (err) {
       setSubmitError(
         "Something went wrong. Please try again or email us directly.",
