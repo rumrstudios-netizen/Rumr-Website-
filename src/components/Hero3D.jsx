@@ -229,15 +229,26 @@ function createPremiumLensAssembly() {
   lens.position.set(LENS_CAP.centerX, LENS_CAP.centerY, frontZ);
 
   const barrelMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x0a0d0e, metalness: 0.62, roughness: 0.34,
-    clearcoat: 0.06, clearcoatRoughness: 0.42, envMapIntensity: 1.9,
+    color: 0x0a0d0e,
+    metalness: 0.62,
+    roughness: 0.34,
+    clearcoat: 0.06,
+    clearcoatRoughness: 0.42,
+    envMapIntensity: 1.9,
   });
   const rubberMaterial = new THREE.MeshStandardMaterial({
-    color: 0x050708, metalness: 0.12, roughness: 0.72, envMapIntensity: 0.9,
+    color: 0x050708,
+    metalness: 0.12,
+    roughness: 0.72,
+    envMapIntensity: 0.9,
   });
   const metalMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x7e8985, metalness: 0.9, roughness: 0.18,
-    clearcoat: 0.18, clearcoatRoughness: 0.16, envMapIntensity: 2.35,
+    color: 0x7e8985,
+    metalness: 0.9,
+    roughness: 0.18,
+    clearcoat: 0.18,
+    clearcoatRoughness: 0.16,
+    envMapIntensity: 2.35,
   });
 
   const barrel = new THREE.Mesh(
@@ -281,7 +292,12 @@ function createPremiumLensAssembly() {
 
   const innerWell = new THREE.Mesh(
     new THREE.CircleGeometry(glassRadius, 144),
-    new THREE.MeshStandardMaterial({ color: 0x010304, metalness: 0.28, roughness: 0.2, envMapIntensity: 1.15 })
+    new THREE.MeshStandardMaterial({
+      color: 0x010304,
+      metalness: 0.28,
+      roughness: 0.2,
+      envMapIntensity: 1.15,
+    })
   );
   innerWell.position.z = -0.135;
   lens.add(innerWell);
@@ -289,10 +305,18 @@ function createPremiumLensAssembly() {
   const rearElement = new THREE.Mesh(
     new THREE.CircleGeometry(glassRadius * 0.805, 144),
     new THREE.MeshPhysicalMaterial({
-      color: 0x09171b, metalness: 0.06, roughness: 0.045,
-      transmission: 0.42, thickness: 0.52, ior: 1.5,
-      clearcoat: 1, clearcoatRoughness: 0.014, envMapIntensity: 2.6,
-      transparent: true, opacity: 0.82, depthWrite: false,
+      color: 0x09171b,
+      metalness: 0.06,
+      roughness: 0.045,
+      transmission: 0.42,
+      thickness: 0.52,
+      ior: 1.5,
+      clearcoat: 1,
+      clearcoatRoughness: 0.014,
+      envMapIntensity: 2.6,
+      transparent: true,
+      opacity: 0.82,
+      depthWrite: false,
     })
   );
   rearElement.position.z = -0.11;
@@ -301,7 +325,12 @@ function createPremiumLensAssembly() {
 
   const irisRing = new THREE.Mesh(
     new THREE.RingGeometry(glassRadius * 0.255, glassRadius * 0.39, 144),
-    new THREE.MeshStandardMaterial({ color: 0x020303, metalness: 0.38, roughness: 0.3, envMapIntensity: 1.25 })
+    new THREE.MeshStandardMaterial({
+      color: 0x020303,
+      metalness: 0.38,
+      roughness: 0.3,
+      envMapIntensity: 1.25,
+    })
   );
   irisRing.position.z = -0.075;
   lens.add(irisRing);
@@ -317,10 +346,19 @@ function createPremiumLensAssembly() {
   const frontElement = new THREE.Mesh(
     new THREE.SphereGeometry(glassRadius * 0.988, 144, 64, 0, Math.PI * 2, 0, Math.PI / 2),
     new THREE.MeshPhysicalMaterial({
-      color: 0x0c1317, metalness: 0.02, roughness: 0.006,
-      transmission: 0.88, thickness: 1.05, ior: 1.52,
-      clearcoat: 1, clearcoatRoughness: 0.004, envMapIntensity: 3.15,
-      transparent: true, opacity: 0.56, depthWrite: false, side: THREE.FrontSide,
+      color: 0x0c1317,
+      metalness: 0.02,
+      roughness: 0.006,
+      transmission: 0.88,
+      thickness: 1.05,
+      ior: 1.52,
+      clearcoat: 1,
+      clearcoatRoughness: 0.004,
+      envMapIntensity: 3.15,
+      transparent: true,
+      opacity: 0.56,
+      depthWrite: false,
+      side: THREE.FrontSide,
     })
   );
   frontElement.rotation.x = Math.PI / 2;
@@ -332,8 +370,11 @@ function createPremiumLensAssembly() {
     new THREE.CircleGeometry(glassRadius * 0.985, 144),
     new THREE.MeshBasicMaterial({
       map: createLensCoatingTexture(),
-      transparent: true, opacity: 0.38,
-      blending: THREE.NormalBlending, depthWrite: false, side: THREE.FrontSide,
+      transparent: true,
+      opacity: 0.38,
+      blending: THREE.NormalBlending,
+      depthWrite: false,
+      side: THREE.FrontSide,
     })
   );
   coating.position.z = 0.014;
@@ -430,7 +471,7 @@ export default function Hero3D() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || window.innerWidth < 768) return undefined;
+    if (!container) return undefined;
 
     let renderer;
     let frameId;
@@ -469,14 +510,14 @@ export default function Hero3D() {
     productRig.rotation.set(1, -0.8, 0.06);
     scene.add(productRig);
 
-    scene.add(new THREE.HemisphereLight(0xfbfffc, 0x020405, 1.48));
-    scene.add(new THREE.AmbientLight(0x0b1210, 0.18));
+    scene.add(new THREE.HemisphereLight(0xfbfffc, 0x0a1215, 4.5));
+    scene.add(new THREE.AmbientLight(0x152220, 1.2));
 
-    const keyLight = new THREE.DirectionalLight(0xfff4e6, 4.35);
+    const keyLight = new THREE.DirectionalLight(0xfff4e6, 8.0);
     keyLight.position.set(-6.4, 8.4, 9.2);
     scene.add(keyLight);
 
-    const frontFill = new THREE.DirectionalLight(0xf5fbff, 1.75);
+    const frontFill = new THREE.DirectionalLight(0xf5fbff, 4.0);
     frontFill.position.set(6.2, 2.0, 8.7);
     scene.add(frontFill);
 
@@ -499,6 +540,14 @@ export default function Hero3D() {
     const rightStrip = new THREE.PointLight(0xf4f7fb, 2.15, 18, 2);
     rightStrip.position.set(7.6, -0.8, 4.6);
     scene.add(rightStrip);
+
+    const leftRim = new THREE.PointLight(0xffffff, 80.0, 40, 1.2);
+    leftRim.position.set(-8, 4, -6);
+    scene.add(leftRim);
+
+    const rightRim = new THREE.PointLight(0xfff5e6, 90.0, 40, 1.2);
+    rightRim.position.set(8, 4, -6);
+    scene.add(rightRim);
 
     const lowerBounce = new THREE.PointLight(0xe7ecef, 1.15, 18, 2);
     lowerBounce.position.set(0.5, -5.6, 5.0);
@@ -531,12 +580,12 @@ export default function Hero3D() {
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
         environmentTexture = pmremGenerator.fromScene(studioEnvironment, 0.04).texture;
         scene.environment = environmentTexture;
-        pmremGenerator.dispose();
-
         const loader = new GLTFLoader();
+
         loader.load(
-          "/camera.glb",
+          "/red_digital_cinema_weapon_dragon_8k_camera.glb",
           (gltf) => {
+            console.log("Model loaded successfully", gltf);
             if (disposed) {
               disposeObject(gltf.scene);
               return;
@@ -545,6 +594,18 @@ export default function Hero3D() {
             model = gltf.scene;
             upgradeCameraMaterials(model);
             removeLensCap(model);
+            
+            // Remove the turntable base from the RED camera model
+            const toRemove = [];
+            model.traverse((child) => {
+              if (child.name === "Turntable") {
+                toRemove.push(child);
+              }
+            });
+            toRemove.forEach(child => {
+              if (child.parent) child.parent.remove(child);
+            });
+            
             model.updateMatrixWorld(true);
 
             const bounds = new THREE.Box3().setFromObject(model);
@@ -554,6 +615,7 @@ export default function Hero3D() {
 
             model.position.sub(center);
             model.scale.setScalar(5.7 / largestDimension);
+            model.rotation.y = Math.PI * 0.65;
 
             model.traverse((object) => {
               if (!object.isMesh) return;
@@ -562,19 +624,17 @@ export default function Hero3D() {
               const materials = Array.isArray(object.material)
                 ? object.material
                 : [object.material];
+              
               materials.forEach((material) => {
                 if (!material) return;
+                
                 if ("envMapIntensity" in material) {
                   material.envMapIntensity = Math.max(material.envMapIntensity || 0, 2.15);
                 }
+                
                 material.needsUpdate = true;
               });
-              if (object.name === "Rumr premium optical lens") {
-                lensCoating = object.userData?.coating || null;
-              }
-            });
-
-            model.traverse((object) => {
+              
               if (object.name === "Rumr premium optical lens") {
                 lensCoating = object.userData?.coating || null;
               }
@@ -582,9 +642,11 @@ export default function Hero3D() {
 
             productRig.add(model);
           },
-          undefined,
+          (xhr) => {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+          },
           (error) => {
-            console.warn("Rumr camera hero could not load model:", error);
+            console.error('An error happened loading the GLB model:', error);
           }
         );
       } catch (error) {
@@ -638,3 +700,4 @@ export default function Hero3D() {
     />
   );
 }
+

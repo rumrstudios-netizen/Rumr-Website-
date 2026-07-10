@@ -42,13 +42,12 @@ export default function HomePage() {
   const [activeVideo, setActiveVideo] = useState(null);
 
   return (
-    <div style={{ backgroundColor: "var(--rumr-bg)" }}>
+    <div>
       {/* ══════════════════════════════════════
           HERO
       ══════════════════════════════════════ */}
       <section
         className="relative h-screen flex items-center px-6 md:px-12 overflow-hidden"
-        style={{ backgroundColor: "var(--rumr-bg)" }}
       >
         {/* Ambient cinematic glow: emerald lower-left, red trace upper-right */}
         <div
@@ -221,7 +220,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-36 px-6 md:px-12"
-        style={{ backgroundColor: "var(--rumr-bg)" }}
+        
       >
         <div className="max-w-7xl mx-auto">
           <Reveal>
@@ -267,7 +266,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-36 px-6 md:px-12"
-        style={{ backgroundColor: "var(--rumr-bg2)" }}
+        
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-end mb-20">
@@ -465,7 +464,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-36 px-6 md:px-12"
-        style={{ backgroundColor: "var(--rumr-bg)" }}
+        
       >
         <div className="max-w-7xl mx-auto">
           <div className="mb-24">
@@ -586,7 +585,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-36 px-6 md:px-12"
-        style={{ backgroundColor: "var(--rumr-bg2)" }}
+        
       >
         <div className="max-w-7xl mx-auto">
           <Reveal className="mb-20 text-center">
@@ -678,7 +677,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-36 px-6 md:px-12"
-        style={{ backgroundColor: "var(--rumr-bg)" }}
+        
       >
         <div className="max-w-7xl mx-auto">
           <div
@@ -742,7 +741,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-36 px-6 md:px-12"
-        style={{ backgroundColor: "var(--rumr-bg2)" }}
+        
       >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -858,7 +857,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-36 px-6 md:px-12"
-        style={{ backgroundColor: "var(--rumr-bg)" }}
+        
       >
         <div className="max-w-7xl mx-auto">
           <Reveal className="mb-16 text-center">
@@ -974,7 +973,7 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section
         className="py-48 px-6 md:px-12 text-center overflow-hidden"
-        style={{ backgroundColor: "var(--rumr-bg2)" }}
+        
       >
         <div className="max-w-5xl mx-auto relative">
           {/* Ambient glow */}

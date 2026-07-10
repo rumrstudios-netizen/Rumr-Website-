@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import CustomCursor from "./components/CustomCursor";
+import GlobalParticles from "./components/GlobalParticles";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -23,6 +24,7 @@ function AppShell() {
       className="min-h-screen antialiased relative"
       style={{ backgroundColor: "var(--rumr-bg)", color: "var(--rumr-text)" }}
     >
+      <GlobalParticles />
       <div className="grain-overlay" aria-hidden="true" />
       <CustomCursor />
       <Navigation />

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300;1,14..32,400;1,14..32,700;1,14..32,900&family=Playfair+Display:ital,wght@1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,300;1,14..32,400;1,14..32,700;1,14..32,900&family=Playfair+Display:ital,wght@1,700;1,800;1,900&family=Cormorant+Garamond:ital,wght@0,700;1,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -17,7 +17,7 @@
   --rumr-green:      #0A3D32;
   --rumr-green-dark: #062B23;
   --rumr-green-h:    #14634D;
-  --rumr-green-soft: #0A3D32;
+  --rumr-green-soft: #165A4B;
   --rumr-text:       #F3F0E8;
   --rumr-text2:      #A5B2AA;
   --rumr-text-muted: #748178;
@@ -42,11 +42,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Editorial serif — use only on select italic emphasis words */
+/* Editorial serif — use only on select emphasis words */
 .serif-italic {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-weight: 800;
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-style: normal;
+  font-weight: 700;
+  -webkit-text-stroke: 1px currentColor;
 }
 
 ::selection {
@@ -134,3 +135,4 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
