@@ -574,6 +574,7 @@ export default function Hero3D() {
     const loadCamera = async () => {
       try {
         const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
+        const { DRACOLoader } = await import("three/addons/loaders/DRACOLoader.js");
         if (disposed) return;
 
         studioEnvironment = createPremiumStudioEnvironment();
@@ -581,9 +582,13 @@ export default function Hero3D() {
         environmentTexture = pmremGenerator.fromScene(studioEnvironment, 0.04).texture;
         scene.environment = environmentTexture;
         const loader = new GLTFLoader();
+        
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+        loader.setDRACOLoader(dracoLoader);
 
         loader.load(
-          "/red_digital_cinema_weapon_dragon_8k_camera.glb",
+          "/red_digital_cinema_weapon_dragon_8k_camera_optimized.glb",
           (gltf) => {
             console.log("Model loaded successfully", gltf);
             if (disposed) {

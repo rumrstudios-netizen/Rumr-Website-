@@ -19,7 +19,7 @@ export default function GlobalParticles() {
     camera.position.z = 50;
 
     // Create 3D Particle Starfield
-    const starsCount = 1200;
+    const starsCount = 600;
     const starsGeometry = new THREE.BufferGeometry();
     const starsPositions = new Float32Array(starsCount * 3);
     const starsColors = new Float32Array(starsCount * 3);
