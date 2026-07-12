@@ -672,69 +672,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          STATS
-      ══════════════════════════════════════ */}
-      <section
-        className="py-36 px-6 md:px-12"
-        
-      >
-        <div className="max-w-7xl mx-auto">
-          <div
-            className="grid grid-cols-2 md:grid-cols-4 gap-10 py-20 px-8 md:px-16 rounded-2xl"
-            style={{
-              border: "1px solid var(--rumr-border)",
-              backgroundColor: "var(--rumr-bg3)",
-            }}
-          >
-            {SITE_CONFIG.stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                className="text-center"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <h4
-                  style={{
-                    fontSize: "clamp(34px, 5vw, 62px)",
-                    fontWeight: 900,
-                    letterSpacing: "-0.04em",
-                    textTransform: "uppercase",
-                    color: "var(--rumr-green-soft)",
-                    marginBottom: "10px",
-                  }}
-                >
-                  {stat.value}
-                </h4>
-                <p
-                  style={{
-                    fontSize: "10px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.2em",
-                    color: "var(--rumr-text2)",
-                  }}
-                >
-                  {stat.label}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-          <p
-            className="text-center mt-6"
-            style={{
-              fontSize: "10px",
-              textTransform: "uppercase",
-              letterSpacing: "0.15em",
-              color: "var(--rumr-border)",
-            }}
-          >
-            * Placeholder values — replace with verified RUMR STUDIOS data
-            before publishing.
-          </p>
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════
           ABOUT TEASER
