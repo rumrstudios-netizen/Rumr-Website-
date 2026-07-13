@@ -11,6 +11,7 @@ import Services from "./pages/Services";
 import Work from "./pages/Work";
 import BrandDetail from "./pages/BrandDetail";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -27,6 +28,7 @@ function AppShell() {
       style={{ backgroundColor: "var(--rumr-bg)", color: "var(--rumr-text)" }}
     >
       <Analytics />
+      <SpeedInsights />
       <GlobalParticles />
       <div className="grain-overlay" aria-hidden="true" />
       <CustomCursor />
