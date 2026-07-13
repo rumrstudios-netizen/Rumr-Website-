@@ -509,6 +509,8 @@ export default function HomePage() {
             {SITE_CONFIG.services.map((service, i) => (
               <motion.div
                 key={service.id}
+                role="button"
+                tabIndex={0}
                 className="group py-10 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer"
                 style={{
                   borderBottom: "1px solid var(--rumr-border)",
@@ -518,6 +520,13 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
+                onClick={() => navigate(`/services#service-${service.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(`/services#service-${service.id}`);
+                  }
+                }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.backgroundColor = "rgba(5,75,64,0.04)")
                 }

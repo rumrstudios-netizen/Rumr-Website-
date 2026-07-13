@@ -75,11 +75,12 @@ export default function ServicesPage() {
           {SITE_CONFIG.services.map((service, index) => (
             <motion.section
               key={service.id}
+              id={`service-${service.id}`}
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start"
+              className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start scroll-mt-40"
             >
               <div className="lg:sticky lg:top-36">
                 <div className="flex items-center gap-4 mb-8">
