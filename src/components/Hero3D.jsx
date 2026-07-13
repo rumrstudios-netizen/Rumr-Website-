@@ -224,9 +224,9 @@ function createLensCoatingTexture() {
 }
 
 // Reduced segment counts throughout — 64 is plenty for smooth circles at render size
-const SEGMENTS_HIGH = 64;
-const SEGMENTS_MED = 48;
-const SEGMENTS_LOW = 32;
+const SEGMENTS_HIGH = 144;
+const SEGMENTS_MED = 72;
+const SEGMENTS_LOW = 48;
 
 function createPremiumLensAssembly() {
   const lens = new THREE.Group();
@@ -289,10 +289,10 @@ function createPremiumLensAssembly() {
   focusRing.position.z = -0.016;
   lens.add(focusRing);
 
-  // Reduced ridges from 56 to 28 — still looks textured
+  // Reduced ridges from 56 to 36 — still looks textured without gaps
   const ridgeGeometry = new THREE.BoxGeometry(outerRadius * 0.024, outerRadius * 0.09, 0.04);
-  for (let step = 0; step < 28; step += 1) {
-    const angle = (step / 28) * Math.PI * 2;
+  for (let step = 0; step < 56; step += 1) {
+    const angle = (step / 56) * Math.PI * 2;
     const radius = outerRadius * 0.91;
     const ridge = new THREE.Mesh(ridgeGeometry, rubberMaterial);
     ridge.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, -0.038);
@@ -494,11 +494,11 @@ export default function Hero3D() {
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: false, // Biggest single perf win — MSAA is very expensive
+        antialias: true, // Needed for the camera model — fine edges flicker without MSAA
         powerPreference: "high-performance",
       });
       // Cap pixel ratio lower — 1.25 is visually indistinguishable from 2x on most screens
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setClearColor(0x000000, 0);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
