@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, Play, MapPin } from "lucide-react";
+import { ArrowRight, Play, MapPin, FolderOpen } from "lucide-react";
 import { SITE_CONFIG } from "../data/config";
 import VideoModal from "../components/VideoModal";
 
@@ -22,6 +22,7 @@ function EyebrowLabel({ children, red = false }) {
 }
 
 export default function WorkPage() {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeVideo, setActiveVideo] = useState(null);
   const categories = [
@@ -142,11 +143,7 @@ export default function WorkPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.45 }}
                 className={`group cursor-pointer ${index % 3 === 0 ? "md:col-span-2" : ""}`}
-                onClick={() => {
-                  if (project.video) {
-                    setActiveVideo(project.video);
-                  }
-                }}
+                onClick={() => navigate(`/work/${project.id}`)}
               >
                 <div
                   className={`relative overflow-hidden rounded-xl ${index % 3 === 0 ? "aspect-[21/8]" : "aspect-[4/5]"}`}
@@ -182,21 +179,21 @@ export default function WorkPage() {
                       boxShadow: "inset 0 0 0 1px rgba(11,117,98,0.35)",
                     }}
                   />
-                  {/* Red play on hover */}
+                  {/* Folder Open icon on hover */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div
                       style={{
                         width: "72px",
                         height: "72px",
                         borderRadius: "50%",
-                        backgroundColor: "var(--rumr-red)",
+                        backgroundColor: "var(--rumr-green)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        boxShadow: "0 0 28px rgba(255,59,48,0.3)",
+                        boxShadow: "0 0 28px rgba(11,117,98,0.4)",
                       }}
                     >
-                      <Play size={26} fill="#fff" />
+                      <FolderOpen size={26} className="text-black" />
                     </div>
                   </div>
                 </div>
@@ -218,6 +215,21 @@ export default function WorkPage() {
                         }}
                       >
                         {project.year}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "9px",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.25em",
+                          color: "var(--rumr-red)",
+                          border: "1px solid rgba(255,59,48,0.3)",
+                          backgroundColor: "rgba(255,59,48,0.08)",
+                          padding: "3px 10px",
+                          borderRadius: "2px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {project.shoots?.length || 0} FILES
                       </span>
                       <span
                         style={{

@@ -26,11 +26,15 @@ export default function CustomCursor() {
 
     const handleMouseOver = (e) => {
       const target = e.target;
-      hovering.current =
-        target.tagName === "A" ||
-        target.tagName === "BUTTON" ||
-        !!target.closest("a") ||
-        !!target.closest("button");
+      if (!target || typeof target.closest !== "function") return;
+      
+      const tagName = target.tagName;
+      if (tagName === "A" || tagName === "BUTTON") {
+        hovering.current = true;
+        return;
+      }
+      
+      hovering.current = !!target.closest("a, button, [role='button'], .cursor-pointer");
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });

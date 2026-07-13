@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, Play, ExternalLink, MapPin } from "lucide-react";
+import { ArrowRight, Play, ExternalLink, MapPin, FolderOpen } from "lucide-react";
 import Hero3D from "../components/Hero3D";
 import { SITE_CONFIG } from "../data/config";
 import VideoModal from "../components/VideoModal";
@@ -39,6 +39,7 @@ function Reveal({ children, className = "", delay = 0 }) {
 }
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [activeVideo, setActiveVideo] = useState(null);
 
   return (
@@ -341,11 +342,7 @@ export default function HomePage() {
                     : "aspect-[4/5]"
                 }`}
                 style={{ backgroundColor: "var(--rumr-surface)" }}
-                onClick={() => {
-                  if (project.video) {
-                    setActiveVideo(project.video);
-                  }
-                }}
+                onClick={() => navigate(`/work/${project.id}`)}
               >
                 <img
                   src={project.image}
@@ -408,6 +405,21 @@ export default function HomePage() {
                         style={{
                           fontSize: "9px",
                           textTransform: "uppercase",
+                          letterSpacing: "0.25em",
+                          color: "var(--rumr-red)",
+                          border: "1px solid rgba(255,59,48,0.3)",
+                          backgroundColor: "rgba(255,59,48,0.08)",
+                          padding: "3px 10px",
+                          borderRadius: "2px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {project.shoots?.length || 0} FILES
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "9px",
+                          textTransform: "uppercase",
                           letterSpacing: "0.2em",
                           color: "var(--rumr-text2)",
                         }}
@@ -434,15 +446,15 @@ export default function HomePage() {
                       {project.description}
                     </p>
                   </div>
-                  {/* Red play button */}
+                  {/* Folder icon button */}
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0"
                     style={{
-                      backgroundColor: "var(--rumr-red)",
-                      boxShadow: "0 0 20px rgba(255,59,48,0.3)",
+                      backgroundColor: "var(--rumr-green)",
+                      boxShadow: "0 0 20px rgba(11,117,98,0.3)",
                     }}
                   >
-                    <Play size={15} fill="#fff" />
+                    <FolderOpen size={16} className="text-black" />
                   </div>
                 </div>
               </motion.div>
