@@ -50,8 +50,8 @@ function prepareTexture(texture, { srgb = false } = {}) {
 function cloneToPhysicalMaterial(source) {
   if (!source) return source;
 
-  const physical = new THREE.MeshPhysicalMaterial({
-    name: `${source.name || "Sony camera"} — luxury PBR`,
+  const standard = new THREE.MeshStandardMaterial({
+    name: `${source.name || "Sony camera"} — standard PBR`,
     color: source.color?.clone?.() || new THREE.Color(0x141618),
     map: source.map || null,
     lightMap: source.lightMap || null,
@@ -65,9 +65,9 @@ function cloneToPhysicalMaterial(source) {
     displacementMap: source.displacementMap || null,
     displacementScale: source.displacementScale ?? 1,
     displacementBias: source.displacementBias ?? 0,
-    roughness: Math.min(0.58, Math.max(0.16, (source.roughness ?? 0.42) * 0.78)),
+    roughness: Math.min(0.68, Math.max(0.24, source.roughness ?? 0.42)),
     roughnessMap: source.roughnessMap || null,
-    metalness: Math.min(0.72, Math.max(0.12, (source.metalness ?? 0.24) * 0.92)),
+    metalness: Math.min(0.8, Math.max(0.1, source.metalness ?? 0.24)),
     metalnessMap: source.metalnessMap || null,
     alphaMap: source.alphaMap || null,
     transparent: Boolean(source.transparent),
@@ -77,45 +77,30 @@ function cloneToPhysicalMaterial(source) {
     depthTest: source.depthTest,
     depthWrite: source.depthWrite,
     alphaTest: source.alphaTest ?? 0,
-    premultipliedAlpha: source.premultipliedAlpha,
-    dithering: source.dithering,
-    flatShading: source.flatShading,
-    vertexColors: source.vertexColors,
-    fog: source.fog,
-    clearcoat: 0.24,
-    clearcoatRoughness: 0.18,
-    clearcoatNormalMap: source.normalMap || null,
-    ior: 1.52,
-    reflectivity: 0.82,
-    sheen: 0.055,
-    sheenColor: new THREE.Color(0x2f3937),
-    sheenRoughness: 0.48,
-    specularIntensity: 0.85,
-    specularColor: new THREE.Color(0xf2f5f7),
   });
 
-  prepareTexture(physical.map, { srgb: true });
-  prepareTexture(physical.lightMap);
-  prepareTexture(physical.aoMap);
-  prepareTexture(physical.emissiveMap, { srgb: true });
-  prepareTexture(physical.bumpMap);
-  prepareTexture(physical.normalMap);
-  prepareTexture(physical.displacementMap);
-  prepareTexture(physical.roughnessMap);
-  prepareTexture(physical.metalnessMap);
-  prepareTexture(physical.alphaMap);
+  prepareTexture(standard.map, { srgb: true });
+  prepareTexture(standard.lightMap);
+  prepareTexture(standard.aoMap);
+  prepareTexture(standard.emissiveMap, { srgb: true });
+  prepareTexture(standard.bumpMap);
+  prepareTexture(standard.normalMap);
+  prepareTexture(standard.displacementMap);
+  prepareTexture(standard.roughnessMap);
+  prepareTexture(standard.metalnessMap);
+  prepareTexture(standard.alphaMap);
 
-  if (source.normalScale && physical.normalScale) {
-    physical.normalScale.copy(source.normalScale).multiplyScalar(0.94);
+  if (source.normalScale && standard.normalScale) {
+    standard.normalScale.copy(source.normalScale).multiplyScalar(0.94);
   }
-  if (source.bumpScale !== undefined) physical.bumpScale = source.bumpScale * 0.9;
-  physical.aoMapIntensity = Math.max(source.aoMapIntensity ?? 1, 1.18);
+  if (source.bumpScale !== undefined) standard.bumpScale = source.bumpScale * 0.9;
+  standard.aoMapIntensity = Math.max(source.aoMapIntensity ?? 1, 1.18);
   if (source.lightMapIntensity !== undefined)
-    physical.lightMapIntensity = source.lightMapIntensity;
+    standard.lightMapIntensity = source.lightMapIntensity;
 
-  physical.envMapIntensity = 2.55;
-  physical.needsUpdate = true;
-  return physical;
+  standard.envMapIntensity = 1.8;
+  standard.needsUpdate = true;
+  return standard;
 }
 
 function upgradeCameraMaterials(root) {
@@ -223,10 +208,10 @@ function createLensCoatingTexture() {
   return texture;
 }
 
-// Reduced segment counts throughout — 64 is plenty for smooth circles at render size
-const SEGMENTS_HIGH = 144;
-const SEGMENTS_MED = 72;
-const SEGMENTS_LOW = 48;
+// Segment counts tuned for performance
+const SEGMENTS_HIGH = 48;
+const SEGMENTS_MED = 32;
+const SEGMENTS_LOW = 16;
 
 function createPremiumLensAssembly() {
   const lens = new THREE.Group();
@@ -237,27 +222,23 @@ function createPremiumLensAssembly() {
   const frontZ = LENS_CAP.zMax + 0.04;
   lens.position.set(LENS_CAP.centerX, LENS_CAP.centerY, frontZ);
 
-  const barrelMaterial = new THREE.MeshPhysicalMaterial({
+  const barrelMaterial = new THREE.MeshStandardMaterial({
     color: 0x0a0d0e,
-    metalness: 0.62,
-    roughness: 0.34,
-    clearcoat: 0.06,
-    clearcoatRoughness: 0.42,
-    envMapIntensity: 1.9,
+    metalness: 0.55,
+    roughness: 0.38,
+    envMapIntensity: 1.5,
   });
   const rubberMaterial = new THREE.MeshStandardMaterial({
     color: 0x050708,
     metalness: 0.12,
     roughness: 0.72,
-    envMapIntensity: 0.9,
+    envMapIntensity: 0.8,
   });
-  const metalMaterial = new THREE.MeshPhysicalMaterial({
+  const metalMaterial = new THREE.MeshStandardMaterial({
     color: 0x7e8985,
-    metalness: 0.9,
-    roughness: 0.18,
-    clearcoat: 0.18,
-    clearcoatRoughness: 0.16,
-    envMapIntensity: 2.35,
+    metalness: 0.85,
+    roughness: 0.22,
+    envMapIntensity: 1.8,
   });
 
   const barrel = new THREE.Mesh(
@@ -289,10 +270,10 @@ function createPremiumLensAssembly() {
   focusRing.position.z = -0.016;
   lens.add(focusRing);
 
-  // Reduced ridges from 56 to 36 — still looks textured without gaps
+  // Reduced ridges to 16 for high performance
   const ridgeGeometry = new THREE.BoxGeometry(outerRadius * 0.024, outerRadius * 0.09, 0.04);
-  for (let step = 0; step < 56; step += 1) {
-    const angle = (step / 56) * Math.PI * 2;
+  for (let step = 0; step < 16; step += 1) {
+    const angle = (step / 16) * Math.PI * 2;
     const radius = outerRadius * 0.91;
     const ridge = new THREE.Mesh(ridgeGeometry, rubberMaterial);
     ridge.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, -0.038);
@@ -314,19 +295,14 @@ function createPremiumLensAssembly() {
 
   const rearElement = new THREE.Mesh(
     new THREE.CircleGeometry(glassRadius * 0.805, SEGMENTS_HIGH),
-    new THREE.MeshPhysicalMaterial({
+    new THREE.MeshStandardMaterial({
       color: 0x09171b,
-      metalness: 0.06,
-      roughness: 0.045,
-      transmission: 0.42,
-      thickness: 0.52,
-      ior: 1.5,
-      clearcoat: 1,
-      clearcoatRoughness: 0.014,
-      envMapIntensity: 2.6,
+      metalness: 0.1,
+      roughness: 0.1,
       transparent: true,
-      opacity: 0.82,
+      opacity: 0.35,
       depthWrite: false,
+      envMapIntensity: 2.0,
     })
   );
   rearElement.position.z = -0.11;
@@ -355,20 +331,15 @@ function createPremiumLensAssembly() {
 
   const frontElement = new THREE.Mesh(
     new THREE.SphereGeometry(glassRadius * 0.988, SEGMENTS_MED, SEGMENTS_LOW, 0, Math.PI * 2, 0, Math.PI / 2),
-    new THREE.MeshPhysicalMaterial({
+    new THREE.MeshStandardMaterial({
       color: 0x0c1317,
-      metalness: 0.02,
-      roughness: 0.006,
-      transmission: 0.88,
-      thickness: 1.05,
-      ior: 1.52,
-      clearcoat: 1,
-      clearcoatRoughness: 0.004,
-      envMapIntensity: 3.15,
+      metalness: 0.1,
+      roughness: 0.05,
       transparent: true,
-      opacity: 0.56,
+      opacity: 0.45,
       depthWrite: false,
       side: THREE.FrontSide,
+      envMapIntensity: 2.2,
     })
   );
   frontElement.rotation.x = Math.PI / 2;
@@ -494,11 +465,11 @@ export default function Hero3D() {
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true, // Needed for the camera model — fine edges flicker without MSAA
+        antialias: false, // Turned off for maximum performance
         powerPreference: "high-performance",
       });
-      // Cap pixel ratio lower — 1.25 is visually indistinguishable from 2x on most screens
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+      // Cap pixel ratio at 1.0 to ensure extremely smooth frame rates on all devices
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
       renderer.setClearColor(0x000000, 0);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
