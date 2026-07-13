@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "motion/react";
 import { ArrowRight, Play, ExternalLink, MapPin, FolderOpen } from "lucide-react";
 import Hero3D from "../components/Hero3D";
 import { SITE_CONFIG } from "../data/config";
 import VideoModal from "../components/VideoModal";
 
-/* ── Tiny label — muted green or red depending on context ── */
+/* â”€â”€ Tiny label â€” muted green or red depending on context â”€â”€ */
 function EyebrowLabel({ children, red = false }) {
   return (
     <span
@@ -23,7 +23,7 @@ function EyebrowLabel({ children, red = false }) {
   );
 }
 
-/* ── Scroll-reveal wrapper ── */
+/* â”€â”€ Scroll-reveal wrapper â”€â”€ */
 function Reveal({ children, className = "", delay = 0 }) {
   return (
     <motion.div
@@ -38,15 +38,331 @@ function Reveal({ children, className = "", delay = 0 }) {
   );
 }
 
+/* ── Full-viewport work card (scroll-jacked section) ── */
+function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActive }) {
+  const step = 1 / (totalSlides - 1);
+  const center = (index + 1) * step;
+  const isLast = index === totalSlides - 2;
+
+  const inputRange = isLast
+    ? [center - step, center]
+    : [center - step, center, center + step];
+
+  const scale = useTransform(scrollProgress, inputRange, isLast ? [0.82, 1] : [0.82, 1, 0.82]);
+  const rotate = useTransform(scrollProgress, inputRange, isLast ? [3, 0] : [3, 0, -3]);
+  const opacity = useTransform(scrollProgress, inputRange, isLast ? [0.35, 1] : [0.35, 1, 0.35]);
+  
+  const imgRange = isLast ? [center - step, center] : [center - step, center + step];
+  const imgY = useTransform(scrollProgress, imgRange, isLast ? ["-5%", "0%"] : ["-5%", "5%"]);
+
+  return (
+    <motion.div
+      style={{
+        flexShrink: 0,
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "clamp(2rem, 5vw, 6rem)",
+        boxSizing: "border-box",
+        position: "relative",
+      }}
+    >
+      <motion.div
+        style={{
+          position: "absolute",
+          width: "calc(100% - clamp(4rem, 10vw, 12rem))",
+          height: "calc(100% - clamp(4rem, 10vw, 12rem))",
+          backgroundColor: "rgba(11, 117, 98, 0.05)",
+          border: "1px solid rgba(11, 117, 98, 0.15)",
+          borderRadius: "20px",
+          scale,
+          rotate: useTransform(scrollProgress, inputRange, isLast ? [5, 2] : [5, 2, -1]),
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      />
+
+      <motion.div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          scale,
+          rotate,
+          opacity,
+          zIndex: 2,
+          pointerEvents: isActive ? "auto" : "none",
+        }}
+      >
+        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "-36px",
+              left: "0",
+              height: "37px",
+              width: "clamp(150px, 15vw, 240px)",
+              backgroundColor: "var(--rumr-surface)",
+              borderTop: "1px solid var(--rumr-border)",
+              borderLeft: "1px solid var(--rumr-border)",
+              borderRight: "1px solid var(--rumr-border)",
+              borderTopLeftRadius: "14px",
+              borderTopRightRadius: "14px",
+              display: "flex",
+              alignItems: "center",
+              paddingLeft: "20px",
+              zIndex: 3,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "monospace",
+                fontSize: "10px",
+                color: "var(--rumr-green-soft)",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+              }}
+            >
+              FILE // 0{index + 1}
+            </span>
+          </div>
+
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "var(--rumr-surface)",
+              border: "1px solid var(--rumr-border)",
+              borderTopRightRadius: "20px",
+              borderBottomLeftRadius: "20px",
+              borderBottomRightRadius: "20px",
+              borderTopLeftRadius: "0px",
+              overflow: "hidden",
+              cursor: "pointer",
+              transition: "border-color 0.4s ease, box-shadow 0.4s ease",
+            }}
+            onClick={onClick}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "var(--rumr-green-h)";
+              e.currentTarget.style.boxShadow = "0 0 60px rgba(5,75,64,0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "var(--rumr-border)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            <motion.img
+              src={project.image}
+              alt={project.title}
+              style={{
+                width: "100%",
+                height: "115%",
+                objectFit: "cover",
+                filter: isActive ? "grayscale(10%) brightness(0.5)" : "grayscale(50%) brightness(0.3)",
+                y: imgY,
+                transition: "filter 0.5s ease",
+              }}
+              onMouseEnter={(e) => {
+                if (isActive) {
+                  e.currentTarget.style.filter = "grayscale(0%) brightness(0.7)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (isActive) {
+                  e.currentTarget.style.filter = "grayscale(10%) brightness(0.5)";
+                }
+              }}
+            />
+            
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to top, rgba(9,11,11,0.95) 0%, rgba(9,11,11,0.4) 40%, rgba(9,11,11,0.1) 70%, transparent 100%)",
+                pointerEvents: "none",
+              }}
+            />
+
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.03)",
+                pointerEvents: "none",
+              }}
+            />
+
+            <div
+              style={{
+                position: "absolute",
+                bottom: "clamp(2rem, 6vh, 4rem)",
+                left: "clamp(2rem, 5vw, 4rem)",
+                right: "clamp(2rem, 5vw, 4rem)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                zIndex: 4,
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    marginBottom: "16px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "9px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.25em",
+                      color: "var(--rumr-green-soft)",
+                      border: "1px solid rgba(11,117,98,0.3)",
+                      backgroundColor: "rgba(5,75,64,0.12)",
+                      padding: "4px 12px",
+                      borderRadius: "2px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {project.category}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "9px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.25em",
+                      color: "var(--rumr-red)",
+                      border: "1px solid rgba(255,59,48,0.3)",
+                      backgroundColor: "rgba(255,59,48,0.08)",
+                      padding: "4px 12px",
+                      borderRadius: "2px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {project.shoots?.length || 0} FILES
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "9px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.2em",
+                      color: "var(--rumr-text2)",
+                    }}
+                  >
+                    {project.year}
+                  </span>
+                </div>
+                <h3
+                  style={{
+                    fontSize: "clamp(24px, 4vw, 56px)",
+                    fontWeight: 900,
+                    letterSpacing: "-0.03em",
+                    textTransform: "uppercase",
+                    color: "var(--rumr-text)",
+                    lineHeight: 1.05,
+                  }}
+                >
+                  {project.title}
+                </h3>
+                <p
+                  style={{
+                    marginTop: "12px",
+                    fontSize: "clamp(13px, 1.4vw, 16px)",
+                    color: "var(--rumr-text2)",
+                    maxWidth: "500px",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {project.description}
+                </p>
+              </div>
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  backgroundColor: "var(--rumr-green)",
+                  boxShadow: "0 0 30px rgba(11,117,98,0.4)",
+                  transition: "transform 0.3s ease",
+                }}
+              >
+                <FolderOpen size={20} className="text-black" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ── Progress dot for scroll-jacked work section ── */
+function ProgressDot({ index, totalSlides, scrollProgress }) {
+  const step = 1 / (totalSlides - 1);
+  const center = index * step;
+
+  const dotScale = useTransform(
+    scrollProgress,
+    [center - step * 0.5, center, center + step * 0.5],
+    [1, 1.8, 1]
+  );
+
+  const dotBg = useTransform(
+    scrollProgress,
+    [center - step * 0.5, center, center + step * 0.5],
+    ["rgba(11,117,98,0.3)", "rgba(11,117,98,1)", "rgba(11,117,98,0.3)"]
+  );
+
+  return (
+    <motion.div
+      style={{
+        width: 8,
+        height: 8,
+        borderRadius: "50%",
+        backgroundColor: dotBg,
+        scale: dotScale,
+      }}
+    />
+  );
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [activeVideo, setActiveVideo] = useState(null);
 
+  /* Scroll-jacked work section */
+  const workSectionRef = useRef(null);
+  const totalProjects = SITE_CONFIG.projects.length;
+  const totalSlides = totalProjects + 1;
+  const { scrollYProgress: workProgress } = useScroll({
+    target: workSectionRef,
+    offset: ["start start", "end end"],
+  });
+  const [activeWorkIndex, setActiveWorkIndex] = useState(0);
+  useMotionValueEvent(workProgress, "change", (v) => {
+    const idx = Math.round(v * (totalSlides - 1));
+    setActiveWorkIndex(idx);
+  });
+  const x = useTransform(workProgress, [0, 1], ["0vw", `-${(totalSlides - 1) * 100}vw`]);
+  const scrollHintOpacity = useTransform(workProgress, [0, 0.15], [0.6, 0]);
+
   return (
     <div>
-      {/* ══════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           HERO
-      ══════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="relative h-screen flex items-center px-6 md:px-12 overflow-hidden"
       >
@@ -142,7 +458,7 @@ export default function HomePage() {
                 {SITE_CONFIG.hero.subtitle}
               </p>
               <div className="flex flex-wrap gap-4">
-                {/* Primary — red showreel */}
+                {/* Primary â€” red showreel */}
                 <Link
                   to="/contact"
                   className="btn-red group"
@@ -162,7 +478,7 @@ export default function HomePage() {
                   <Play size={14} fill="#fff" />
                   VIEW SHOWREEL
                 </Link>
-                {/* Secondary — emerald outline */}
+                {/* Secondary â€” emerald outline */}
                 <Link
                   to="/work"
                   className="btn-emerald"
@@ -216,9 +532,9 @@ export default function HomePage() {
         `}</style>
       </section>
 
-      {/* ══════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           BRAND STATEMENT
-      ══════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="py-36 px-6 md:px-12"
         
@@ -262,220 +578,170 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          FEATURED WORK
-      ══════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          FEATURED WORK â€” SCROLL-JACKED
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
-        className="py-36 px-6 md:px-12"
-        
+        ref={workSectionRef}
+        style={{ height: `${totalSlides * 100}vh`, position: "relative" }}
       >
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-20">
-            <div>
-              <EyebrowLabel>Selected Work</EyebrowLabel>
-              <h2
-                className="mt-4"
-                style={{
-                  fontSize: "clamp(34px, 6vw, 78px)",
-                  fontWeight: 900,
-                  letterSpacing: "-0.04em",
-                  textTransform: "uppercase",
-                  color: "var(--rumr-text)",
-                  lineHeight: 0.92,
-                }}
-              >
-                BUILT TO BE SEEN.
-                <br />
-                <em
-                  className="serif-italic"
-                  style={{ color: "var(--rumr-green-soft)" }}
-                >
-                  DESIGNED TO BE REMEMBERED.
-                </em>
-              </h2>
-            </div>
-            <Link
-              to="/work"
-              className="hidden md:flex items-center gap-3 group"
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            width: "100%",
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {/* Horizontal Sliding Track */}
+          <motion.div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: `${totalSlides * 100}vw`,
+              height: "100vh",
+              x,
+            }}
+          >
+            {/* Slide 0: Typographic Intro Header */}
+            <motion.div
               style={{
-                color: "var(--rumr-text)",
-                textDecoration: "none",
-                fontSize: "12px",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
+                flexShrink: 0,
+                width: "100vw",
+                height: "100vh",
+                display: "flex",
+                alignItems: "center",
+                boxSizing: "border-box",
+                paddingLeft: "clamp(2rem, 8vw, 12rem)",
+                opacity: useTransform(workProgress, [0, 1 / (totalSlides - 1)], [1, 0]),
+                scale: useTransform(workProgress, [0, 1 / (totalSlides - 1)], [1, 0.9]),
               }}
             >
-              View All Work
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300"
-                style={{
-                  border: "1px solid var(--rumr-border)",
-                  color: "var(--rumr-green-soft)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--rumr-green)";
-                  e.currentTarget.style.borderColor = "var(--rumr-green)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.borderColor = "var(--rumr-border)";
-                }}
-              >
-                <ArrowRight size={14} />
-              </div>
-            </Link>
-          </div>
-
-          {/* Work cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {SITE_CONFIG.projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.75, delay: index * 0.1 }}
-                className={`group relative overflow-hidden cursor-pointer rounded-xl ${
-                  index % 3 === 0
-                    ? "md:col-span-2 aspect-[16/7]"
-                    : "aspect-[4/5]"
-                }`}
-                style={{ backgroundColor: "var(--rumr-surface)" }}
-                onClick={() => navigate(`/work/${project.id}`)}
-              >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
-                  style={{ filter: "grayscale(55%) brightness(0.55)" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.filter =
-                      "grayscale(0%) brightness(0.75)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.filter =
-                      "grayscale(55%) brightness(0.55)")
-                  }
-                />
-                {/* Gradient */}
-                <div
-                  className="absolute inset-0"
+              <div>
+                <EyebrowLabel>Selected Work</EyebrowLabel>
+                <h2
+                  className="mt-4"
                   style={{
-                    background:
-                      "linear-gradient(to top, rgba(9,11,11,0.95) 0%, rgba(9,11,11,0.15) 55%, transparent 100%)",
+                    fontSize: "clamp(34px, 6vw, 78px)",
+                    fontWeight: 900,
+                    letterSpacing: "-0.04em",
+                    textTransform: "uppercase",
+                    color: "var(--rumr-text)",
+                    lineHeight: 0.92,
                   }}
-                />
-                {/* Emerald hover border */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ boxShadow: "inset 0 0 0 1px rgba(11,117,98,0.4)" }}
-                />
-                {/* Emerald bottom glow on hover */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    background:
-                      "radial-gradient(ellipse 55% 35% at 50% 100%, rgba(5,75,64,0.18) 0%, transparent 70%)",
-                  }}
-                />
-
-                <div className="absolute bottom-0 left-0 p-8 w-full flex justify-between items-end">
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      {/* Category tag — emerald */}
-                      <span
-                        style={{
-                          fontSize: "9px",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.25em",
-                          color: "var(--rumr-green-soft)",
-                          border: "1px solid rgba(11,117,98,0.3)",
-                          backgroundColor: "rgba(5,75,64,0.12)",
-                          padding: "3px 10px",
-                          borderRadius: "2px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {project.category}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "9px",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.25em",
-                          color: "var(--rumr-red)",
-                          border: "1px solid rgba(255,59,48,0.3)",
-                          backgroundColor: "rgba(255,59,48,0.08)",
-                          padding: "3px 10px",
-                          borderRadius: "2px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {project.shoots?.length || 0} FILES
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "9px",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.2em",
-                          color: "var(--rumr-text2)",
-                        }}
-                      >
-                        {project.year}
-                      </span>
-                    </div>
-                    <h3
-                      style={{
-                        fontSize: "clamp(18px, 2.8vw, 34px)",
-                        fontWeight: 900,
-                        letterSpacing: "-0.03em",
-                        textTransform: "uppercase",
-                        color: "var(--rumr-text)",
-                        lineHeight: 1.05,
-                      }}
-                    >
-                      {project.title}
-                    </h3>
-                    <p
-                      className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ fontSize: "13px", color: "var(--rumr-text2)" }}
-                    >
-                      {project.description}
-                    </p>
-                  </div>
-                  {/* Folder icon button */}
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0"
+                >
+                  BUILT TO BE SEEN.
+                  <br />
+                  <em
+                    className="serif-italic"
+                    style={{ color: "var(--rumr-green-soft)" }}
+                  >
+                    DESIGNED TO BE REMEMBERED.
+                  </em>
+                </h2>
+                <div style={{ marginTop: "2rem" }}>
+                  <Link
+                    to="/work"
+                    className="inline-flex items-center gap-3 group"
                     style={{
-                      backgroundColor: "var(--rumr-green)",
-                      boxShadow: "0 0 20px rgba(11,117,98,0.3)",
+                      color: "var(--rumr-text)",
+                      textDecoration: "none",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
                     }}
                   >
-                    <FolderOpen size={16} className="text-black" />
-                  </div>
+                    View All Work
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300"
+                      style={{
+                        border: "1px solid var(--rumr-border)",
+                        color: "var(--rumr-green-soft)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--rumr-green)";
+                        e.currentTarget.style.borderColor = "var(--rumr-green)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.borderColor = "var(--rumr-border)";
+                      }}
+                    >
+                      <ArrowRight size={14} />
+                    </div>
+                  </Link>
                 </div>
-              </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Slide 1 - N: Project Cards */}
+            {SITE_CONFIG.projects.map((project, index) => (
+              <WorkCard
+                key={project.id}
+                project={project}
+                index={index}
+                totalSlides={totalSlides}
+                scrollProgress={workProgress}
+                onClick={() => navigate(`/work/${project.id}`)}
+                isActive={activeWorkIndex === index + 1}
+              />
+            ))}
+          </motion.div>
+
+          {/* Progress dots */}
+          <div
+            style={{
+              position: "absolute",
+              right: "2rem",
+              top: "50%",
+              transform: "translateY(-50%)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "14px",
+              zIndex: 10,
+            }}
+          >
+            {Array.from({ length: totalSlides }).map((_, index) => (
+              <ProgressDot
+                key={index}
+                index={index}
+                totalSlides={totalSlides}
+                scrollProgress={workProgress}
+              />
             ))}
           </div>
 
-          <div className="mt-14 text-center md:hidden">
-            <Link
-              to="/work"
-              className="btn-emerald"
-              style={{ padding: "14px 32px", fontSize: "12px" }}
-            >
-              View All Work
-            </Link>
-          </div>
+          {/* Scroll indicator */}
+          <motion.p
+            style={{
+              position: "absolute",
+              bottom: "2rem",
+              left: "50%",
+              x: "-50%",
+              fontSize: "10px",
+              textTransform: "uppercase",
+              letterSpacing: "0.25em",
+              color: "var(--rumr-text-muted)",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              zIndex: 10,
+              opacity: scrollHintOpacity,
+            }}
+          >
+            Scroll to explore
+            <ArrowRight size={12} style={{ transform: "rotate(90deg)" }} />
+          </motion.p>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SERVICES
-      ══════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="py-36 px-6 md:px-12"
         
@@ -603,9 +869,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           PROCESS
-      ══════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="py-36 px-6 md:px-12"
         
@@ -696,9 +962,9 @@ export default function HomePage() {
       </section>
 
 
-      {/* ══════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           ABOUT TEASER
-      ══════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="py-36 px-6 md:px-12"
         
@@ -814,9 +1080,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           INSTAGRAM STRIP
-      ══════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="py-36 px-6 md:px-12"
         
@@ -932,9 +1198,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           FINAL CTA
-      ══════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="py-48 px-6 md:px-12 text-center overflow-hidden"
         

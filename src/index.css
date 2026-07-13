@@ -149,3 +149,29 @@ img {
   content-visibility: auto;
 }
 
+/* ── Horizontal scroll tracks ────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.work-scroll-track {
+  scroll-padding-inline: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .work-scroll-track {
+    scroll-padding-inline: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .work-scroll-track {
+    scroll-padding-inline: max(3rem, calc((100vw - 80rem) / 2 + 3rem));
+  }
+}
+
