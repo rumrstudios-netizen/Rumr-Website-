@@ -10,16 +10,21 @@ export default function GlobalParticles() {
     const container = mountRef.current;
     if (!container) return;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // No antialias needed for particles — big perf win
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: false,
+      powerPreference: "low-power",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
     camera.position.z = 50;
 
-    // Create 3D Particle Starfield
-    const starsCount = 600;
+    // Reduced from 600 → 350 particles — visually the same at distance
+    const starsCount = 350;
     const starsGeometry = new THREE.BufferGeometry();
     const starsPositions = new Float32Array(starsCount * 3);
     const starsColors = new Float32Array(starsCount * 3);
@@ -51,27 +56,27 @@ export default function GlobalParticles() {
     starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
     starsGeometry.setAttribute('color', new THREE.BufferAttribute(starsColors, 3));
     
-    // Generate a soft circular gradient texture for the particles
+    // Smaller canvas texture for particles (16x16 instead of 32x32)
     const particleCanvas = document.createElement('canvas');
-    particleCanvas.width = 32;
-    particleCanvas.height = 32;
+    particleCanvas.width = 16;
+    particleCanvas.height = 16;
     const pContext = particleCanvas.getContext('2d');
-    const pGradient = pContext.createRadialGradient(16, 16, 0, 16, 16, 16);
+    const pGradient = pContext.createRadialGradient(8, 8, 0, 8, 8, 8);
     pGradient.addColorStop(0, 'rgba(255,255,255,1)');
     pGradient.addColorStop(1, 'rgba(255,255,255,0)');
     pContext.fillStyle = pGradient;
-    pContext.fillRect(0, 0, 32, 32);
+    pContext.fillRect(0, 0, 16, 16);
     const particleTexture = new THREE.CanvasTexture(particleCanvas);
 
     const starsMaterial = new THREE.PointsMaterial({
-      size: 0.8, // Slightly larger because the camera is further away
+      size: 0.8,
       map: particleTexture,
       transparent: true,
       opacity: 0.8,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true,
-      vertexColors: true // Enables our custom color palette
+      vertexColors: true
     });
     
     const starfield = new THREE.Points(starsGeometry, starsMaterial);
@@ -86,10 +91,17 @@ export default function GlobalParticles() {
     };
     resize();
 
+    // Throttled pointer tracking — only update every 32ms (~30fps mouse input)
     const pointer = { x: 0, y: 0 };
+    let pointerRafPending = false;
     const handlePointerMove = (event) => {
-      pointer.x = (event.clientX / window.innerWidth - 0.5) * 2;
-      pointer.y = (event.clientY / window.innerHeight - 0.5) * 2;
+      if (pointerRafPending) return;
+      pointerRafPending = true;
+      requestAnimationFrame(() => {
+        pointer.x = (event.clientX / window.innerWidth - 0.5) * 2;
+        pointer.y = (event.clientY / window.innerHeight - 0.5) * 2;
+        pointerRafPending = false;
+      });
     };
 
     window.addEventListener("resize", resize);

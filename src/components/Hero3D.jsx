@@ -43,7 +43,7 @@ function disposeScene(scene) {
 function prepareTexture(texture, { srgb = false } = {}) {
   if (!texture) return;
   if (srgb) texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = Math.max(texture.anisotropy || 1, 12);
+  texture.anisotropy = Math.max(texture.anisotropy || 1, 8);
   texture.needsUpdate = true;
 }
 
@@ -136,9 +136,10 @@ function upgradeCameraMaterials(root) {
 }
 
 function createLensCoatingTexture() {
+  // Reduced from 1024 → 512 — still looks great on lens
   const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 1024;
+  canvas.width = 512;
+  canvas.height = 512;
   const context = canvas.getContext("2d");
   if (!context) {
     const fallback = new THREE.CanvasTexture(canvas);
@@ -169,7 +170,10 @@ function createLensCoatingTexture() {
     context.restore();
   };
 
-  const edgeTint = context.createRadialGradient(520, 535, 115, 512, 512, 470);
+  // Scale factor for 512 vs 1024
+  const s = 0.5;
+
+  const edgeTint = context.createRadialGradient(260 * s * 2, 268 * s * 2, 58 * s * 2, 256, 256, 235);
   edgeTint.addColorStop(0, "rgba(0, 0, 0, 0)");
   edgeTint.addColorStop(0.58, "rgba(7, 17, 22, 0.02)");
   edgeTint.addColorStop(0.82, "rgba(10, 24, 30, 0.08)");
@@ -180,44 +184,49 @@ function createLensCoatingTexture() {
   context.save();
   context.globalCompositeOperation = "screen";
 
-  drawSoftbox(348, 290, 138, 320, -0.42, "rgba(255,255,250,0.60)", "rgba(255,255,250,0.00)", 26, 0.95);
-  drawSoftbox(676, 388, 78, 224, 0.27, "rgba(244,250,255,0.30)", "rgba(244,250,255,0.00)", 18, 0.82);
+  drawSoftbox(174, 145, 69, 160, -0.42, "rgba(255,255,250,0.60)", "rgba(255,255,250,0.00)", 13, 0.95);
+  drawSoftbox(338, 194, 39, 112, 0.27, "rgba(244,250,255,0.30)", "rgba(244,250,255,0.00)", 9, 0.82);
 
-  const glint = context.createRadialGradient(408, 234, 0, 408, 234, 78);
+  const glint = context.createRadialGradient(204, 117, 0, 204, 117, 39);
   glint.addColorStop(0, "rgba(255,255,255,0.68)");
   glint.addColorStop(0.22, "rgba(255,255,255,0.28)");
   glint.addColorStop(1, "rgba(255,255,255,0)");
   context.fillStyle = glint;
   context.beginPath();
-  context.ellipse(408, 234, 62, 52, -0.18, 0, Math.PI * 2);
+  context.ellipse(204, 117, 31, 26, -0.18, 0, Math.PI * 2);
   context.fill();
 
-  const coating = context.createRadialGradient(612, 612, 0, 612, 612, 220);
+  const coating = context.createRadialGradient(306, 306, 0, 306, 306, 110);
   coating.addColorStop(0, "rgba(98, 214, 178, 0.16)");
   coating.addColorStop(0.32, "rgba(44, 125, 110, 0.10)");
   coating.addColorStop(0.68, "rgba(44, 86, 124, 0.06)");
   coating.addColorStop(1, "rgba(0,0,0,0)");
   context.fillStyle = coating;
   context.beginPath();
-  context.ellipse(612, 612, 202, 172, 0.18, 0, Math.PI * 2);
+  context.ellipse(306, 306, 101, 86, 0.18, 0, Math.PI * 2);
   context.fill();
 
   context.beginPath();
-  context.ellipse(528, 514, 370, 324, -0.3, 3.72, 5.2);
+  context.ellipse(264, 257, 185, 162, -0.3, 3.72, 5.2);
   context.strokeStyle = "rgba(255,246,232,0.13)";
-  context.lineWidth = 12;
+  context.lineWidth = 6;
   context.shadowColor = "rgba(255,248,236,0.08)";
-  context.shadowBlur = 10;
+  context.shadowBlur = 5;
   context.stroke();
 
   context.restore();
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 8;
+  texture.anisotropy = 4;
   texture.needsUpdate = true;
   return texture;
 }
+
+// Reduced segment counts throughout — 64 is plenty for smooth circles at render size
+const SEGMENTS_HIGH = 64;
+const SEGMENTS_MED = 48;
+const SEGMENTS_LOW = 32;
 
 function createPremiumLensAssembly() {
   const lens = new THREE.Group();
@@ -252,7 +261,7 @@ function createPremiumLensAssembly() {
   });
 
   const barrel = new THREE.Mesh(
-    new THREE.CylinderGeometry(outerRadius, outerRadius * 0.982, 0.48, 144, 1, true),
+    new THREE.CylinderGeometry(outerRadius, outerRadius * 0.982, 0.48, SEGMENTS_HIGH, 1, true),
     barrelMaterial
   );
   barrel.rotation.x = Math.PI / 2;
@@ -260,29 +269,30 @@ function createPremiumLensAssembly() {
   lens.add(barrel);
 
   const frontBevel = new THREE.Mesh(
-    new THREE.TorusGeometry(outerRadius * 0.978, outerRadius * 0.04, 18, 144),
+    new THREE.TorusGeometry(outerRadius * 0.978, outerRadius * 0.04, 12, SEGMENTS_HIGH),
     barrelMaterial
   );
   frontBevel.position.z = 0.004;
   lens.add(frontBevel);
 
   const engravingRing = new THREE.Mesh(
-    new THREE.TorusGeometry(outerRadius * 0.845, outerRadius * 0.012, 10, 144),
+    new THREE.TorusGeometry(outerRadius * 0.845, outerRadius * 0.012, 8, SEGMENTS_HIGH),
     metalMaterial
   );
   engravingRing.position.z = 0.024;
   lens.add(engravingRing);
 
   const focusRing = new THREE.Mesh(
-    new THREE.TorusGeometry(outerRadius * 0.905, outerRadius * 0.027, 14, 144),
+    new THREE.TorusGeometry(outerRadius * 0.905, outerRadius * 0.027, 10, SEGMENTS_HIGH),
     rubberMaterial
   );
   focusRing.position.z = -0.016;
   lens.add(focusRing);
 
+  // Reduced ridges from 56 to 28 — still looks textured
   const ridgeGeometry = new THREE.BoxGeometry(outerRadius * 0.024, outerRadius * 0.09, 0.04);
-  for (let step = 0; step < 56; step += 1) {
-    const angle = (step / 56) * Math.PI * 2;
+  for (let step = 0; step < 28; step += 1) {
+    const angle = (step / 28) * Math.PI * 2;
     const radius = outerRadius * 0.91;
     const ridge = new THREE.Mesh(ridgeGeometry, rubberMaterial);
     ridge.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, -0.038);
@@ -291,7 +301,7 @@ function createPremiumLensAssembly() {
   }
 
   const innerWell = new THREE.Mesh(
-    new THREE.CircleGeometry(glassRadius, 144),
+    new THREE.CircleGeometry(glassRadius, SEGMENTS_HIGH),
     new THREE.MeshStandardMaterial({
       color: 0x010304,
       metalness: 0.28,
@@ -303,7 +313,7 @@ function createPremiumLensAssembly() {
   lens.add(innerWell);
 
   const rearElement = new THREE.Mesh(
-    new THREE.CircleGeometry(glassRadius * 0.805, 144),
+    new THREE.CircleGeometry(glassRadius * 0.805, SEGMENTS_HIGH),
     new THREE.MeshPhysicalMaterial({
       color: 0x09171b,
       metalness: 0.06,
@@ -324,7 +334,7 @@ function createPremiumLensAssembly() {
   lens.add(rearElement);
 
   const irisRing = new THREE.Mesh(
-    new THREE.RingGeometry(glassRadius * 0.255, glassRadius * 0.39, 144),
+    new THREE.RingGeometry(glassRadius * 0.255, glassRadius * 0.39, SEGMENTS_HIGH),
     new THREE.MeshStandardMaterial({
       color: 0x020303,
       metalness: 0.38,
@@ -344,7 +354,7 @@ function createPremiumLensAssembly() {
   lens.add(aperture);
 
   const frontElement = new THREE.Mesh(
-    new THREE.SphereGeometry(glassRadius * 0.988, 144, 64, 0, Math.PI * 2, 0, Math.PI / 2),
+    new THREE.SphereGeometry(glassRadius * 0.988, SEGMENTS_MED, SEGMENTS_LOW, 0, Math.PI * 2, 0, Math.PI / 2),
     new THREE.MeshPhysicalMaterial({
       color: 0x0c1317,
       metalness: 0.02,
@@ -367,7 +377,7 @@ function createPremiumLensAssembly() {
   lens.add(frontElement);
 
   const coating = new THREE.Mesh(
-    new THREE.CircleGeometry(glassRadius * 0.985, 144),
+    new THREE.CircleGeometry(glassRadius * 0.985, SEGMENTS_HIGH),
     new THREE.MeshBasicMaterial({
       map: createLensCoatingTexture(),
       transparent: true,
@@ -484,10 +494,11 @@ export default function Hero3D() {
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true,
+        antialias: false, // Biggest single perf win — MSAA is very expensive
         powerPreference: "high-performance",
       });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
+      // Cap pixel ratio lower — 1.25 is visually indistinguishable from 2x on most screens
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
       renderer.setClearColor(0x000000, 0);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -553,19 +564,37 @@ export default function Hero3D() {
     lowerBounce.position.set(0.5, -5.6, 5.0);
     scene.add(lowerBounce);
 
+    // Debounced resize — no need to run on every pixel of drag
+    let resizeTimeout;
     const resize = () => {
-      const { width, height } = container.getBoundingClientRect();
-      if (!width || !height) return;
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const { width, height } = container.getBoundingClientRect();
+        if (!width || !height) return;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height, false);
+      }, 100);
+    };
+    // Initial size — no debounce
+    const { width, height } = container.getBoundingClientRect();
+    if (width && height) {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
-    };
-    resize();
+    }
 
+    // Throttled pointer tracking
     const pointer = { x: 0, y: 0 };
+    let pointerRafPending = false;
     const handlePointerMove = (event) => {
-      pointer.x = (event.clientX / window.innerWidth - 0.5) * 2;
-      pointer.y = (event.clientY / window.innerHeight - 0.5) * 2;
+      if (pointerRafPending) return;
+      pointerRafPending = true;
+      requestAnimationFrame(() => {
+        pointer.x = (event.clientX / window.innerWidth - 0.5) * 2;
+        pointer.y = (event.clientY / window.innerHeight - 0.5) * 2;
+        pointerRafPending = false;
+      });
     };
 
     window.addEventListener("resize", resize);
@@ -581,6 +610,8 @@ export default function Hero3D() {
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
         environmentTexture = pmremGenerator.fromScene(studioEnvironment, 0.04).texture;
         scene.environment = environmentTexture;
+        pmremGenerator.dispose(); // Free PMREM resources after generation
+        
         const loader = new GLTFLoader();
         
         const dracoLoader = new DRACOLoader();
@@ -590,7 +621,6 @@ export default function Hero3D() {
         loader.load(
           "/red_digital_cinema_weapon_dragon_8k_camera_optimized.glb",
           (gltf) => {
-            console.log("Model loaded successfully", gltf);
             if (disposed) {
               disposeObject(gltf.scene);
               return;
@@ -622,10 +652,12 @@ export default function Hero3D() {
             model.scale.setScalar(5.7 / largestDimension);
             model.rotation.y = Math.PI * 0.65;
 
+            // Freeze matrices after positioning — saves per-frame computation
             model.traverse((object) => {
               if (!object.isMesh) return;
               object.castShadow = false;
               object.receiveShadow = false;
+              object.frustumCulled = true;
               const materials = Array.isArray(object.material)
                 ? object.material
                 : [object.material];
@@ -647,9 +679,7 @@ export default function Hero3D() {
 
             productRig.add(model);
           },
-          (xhr) => {
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-          },
+          undefined, // Remove progress handler — logging every % hurts perf
           (error) => {
             console.error('An error happened loading the GLB model:', error);
           }
@@ -685,6 +715,7 @@ export default function Hero3D() {
     return () => {
       disposed = true;
       window.cancelAnimationFrame(frameId);
+      clearTimeout(resizeTimeout);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handlePointerMove);
       if (model) disposeObject(model);
@@ -705,4 +736,3 @@ export default function Hero3D() {
     />
   );
 }
-

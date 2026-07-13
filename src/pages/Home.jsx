@@ -350,6 +350,8 @@ export default function HomePage() {
                 <img
                   src={project.image}
                   alt={project.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                   style={{ filter: "grayscale(55%) brightness(0.55)" }}
                   onMouseEnter={(e) =>
@@ -768,6 +770,8 @@ export default function HomePage() {
                   <img
                     src={src}
                     alt={`BTS ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full object-cover transition-all duration-700"
                     style={{
                       height: "180px",
@@ -860,6 +864,8 @@ export default function HomePage() {
                 <img
                   src={item.src}
                   alt={item.label}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                   style={{ filter: "grayscale(55%) brightness(0.55)" }}
                   onMouseEnter={(e) =>

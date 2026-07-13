@@ -110,6 +110,8 @@ export default function AboutPage() {
           <img
             src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=2000"
             alt="Behind the scenes at RUMR STUDIOS"
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover"
             style={{ filter: "grayscale(25%) brightness(0.45)" }}
           />
@@ -388,6 +390,8 @@ export default function AboutPage() {
                 <img
                   src={src}
                   alt={`BTS ${i + 1}`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full object-cover"
                   style={{
                     height: "180px",

@@ -155,6 +155,8 @@ export default function WorkPage() {
                   <img
                     src={project.image}
                     alt={project.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                     style={{ filter: "grayscale(50%) brightness(0.55)" }}
                     onMouseEnter={(e) =>

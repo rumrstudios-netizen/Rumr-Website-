@@ -30,7 +30,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { /* scroll-behavior: smooth removed — causes scroll jank with heavy pages */ }
 
 body {
   margin: 0;
@@ -108,8 +108,9 @@ body {
   background-image: url("https://grainy-gradients.vercel.app/noise.svg");
   opacity: 0.03;
   pointer-events: none;
-  z-index: 9999;
-  filter: contrast(180%) brightness(120%);
+  z-index: 50;
+  /* Removed heavy filter: contrast(180%) brightness(120%) — was forcing GPU recomposite every frame */
+  will-change: auto;
 }
 
 /* ── Glow utilities ───────────────────────────────── */
@@ -134,5 +135,17 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── GPU-accelerated transitions ─────────────────── */
+.transition-all,
+.transition-opacity,
+.transition-colors {
+  will-change: auto;
+}
+
+/* ── Image rendering optimization ────────────────── */
+img {
+  content-visibility: auto;
 }
 
