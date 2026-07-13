@@ -10,8 +10,8 @@ import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import Work from "./pages/Work";
 import BrandDetail from "./pages/BrandDetail";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
