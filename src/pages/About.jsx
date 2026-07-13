@@ -128,36 +128,21 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
             {/* Rhythm Singh Card */}
-            <div className="flex flex-col gap-6 founder-card cursor-pointer">
+            <div className="flex flex-col gap-6">
               <div 
                 className="relative overflow-hidden rounded-2xl aspect-square border border-[var(--rumr-border)] bg-[var(--rumr-surface)]"
               >
-                {/* Original Image (bottom) */}
                 <img
                   src="/images/rhythm_original.jpg"
-                  alt="Rhythm Singh Original"
-                  className="absolute inset-0 w-full h-full object-cover original-img transition-all duration-700 ease-out scale-105"
+                  alt="Rhythm Singh"
+                  className="w-full h-full object-cover"
                   style={{ filter: "grayscale(15%) brightness(0.9)" }}
-                />
-                {/* ASCII Image (top) */}
-                <img
-                  src="/images/rhythm_ascii.jpg"
-                  alt="Rhythm Singh ASCII"
-                  className="absolute inset-0 w-full h-full object-cover ascii-img transition-all duration-700 ease-out opacity-100"
-                />
-                
-                {/* Glow border overlay on hover */}
-                <div 
-                  className="absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none glow-border"
-                  style={{
-                    boxShadow: "inset 0 0 0 1px rgba(11,117,98,0.4)"
-                  }}
                 />
               </div>
               
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xl font-bold tracking-tight text-white name-text transition-colors duration-300">
+                  <h3 className="text-xl font-bold tracking-tight text-white">
                     Rhythm Singh
                   </h3>
                   <span className="font-mono text-xs text-[var(--rumr-red)] border border-[rgba(255,59,48,0.3)] bg-[rgba(255,59,48,0.08)] px-2 py-0.5 rounded">
@@ -174,18 +159,16 @@ export default function AboutPage() {
             </div>
 
             {/* Second Founder Card (Placeholder) */}
-            <div className="flex flex-col gap-6 founder-card cursor-pointer">
+            <div className="flex flex-col gap-6">
               <div 
                 className="relative overflow-hidden rounded-2xl aspect-square border border-[var(--rumr-border)] bg-[var(--rumr-surface)]"
               >
-                {/* Default/Placeholder Image */}
                 <img
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=1200"
                   alt="Co-Founder"
-                  className="absolute inset-0 w-full h-full object-cover original-img transition-all duration-700 ease-out scale-105"
+                  className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) brightness(0.3)" }}
                 />
-                {/* Placeholder Overlay text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-black/60 backdrop-blur-xs">
                   <span className="font-mono text-[10px] text-[var(--rumr-green-soft)] tracking-widest uppercase mb-1">
                     Position
@@ -214,20 +197,6 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
-          <style>{`
-            .founder-card:hover .ascii-img {
-              opacity: 0 !important;
-            }
-            .founder-card:hover .original-img {
-              transform: scale(1) !important;
-            }
-            .founder-card:hover .glow-border {
-              opacity: 1 !important;
-            }
-            .founder-card:hover .name-text {
-              color: var(--rumr-green-soft) !important;
-            }
-          `}</style>
         </section>
 
 
