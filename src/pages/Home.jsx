@@ -130,8 +130,9 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
       <motion.div
         style={{
           position: "relative",
-          width: "100%",
-          height: "100%",
+          width: "88%",
+          aspectRatio: "16 / 10",
+          maxHeight: "85%",
           scale,
           rotate,
           zIndex: 2,
@@ -394,8 +395,8 @@ export default function HomePage() {
     offset: ["start start", "end end"],
   });
   const workProgress = useSpring(rawWorkProgress, {
-    stiffness: 220,
-    damping: 30,
+    stiffness: 500,
+    damping: 50,
     restDelta: 0.001
   });
   const [activeWorkIndex, setActiveWorkIndex] = useState(0);
@@ -631,7 +632,7 @@ export default function HomePage() {
       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         ref={workSectionRef}
-        style={{ height: `${totalSlides * 100}vh`, position: "relative" }}
+        style={{ height: `${totalSlides * 50}vh`, position: "relative" }}
       >
         <div
           style={{
