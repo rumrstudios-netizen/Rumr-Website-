@@ -1,9 +1,10 @@
 import React from "react";
 
-export default function RumrLogo({ className = "", height = 36 }) {
+export default function RumrLogo({ className = "", height = 36, useGreen = false }) {
+  const src = useGreen ? "/rumr%20logo%20green.png" : "/logo%20rumr.jpg.jpeg";
   return (
     <img
-      src="/logo%20rumr.jpg.jpeg"
+      src={src}
       alt="RUMR"
       className={className}
       style={{

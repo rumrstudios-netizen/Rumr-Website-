@@ -276,7 +276,7 @@ export default function Navigation() {
               alignItems: "center",
             }}
           >
-            <RumrLogo height={36} />
+            <RumrLogo height={36} useGreen={true} />
           </Link>
 
           {/* ── Desktop Nav Links ── */}
