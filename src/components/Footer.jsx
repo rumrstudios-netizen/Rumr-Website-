@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { SITE_CONFIG } from "../data/config";
 import { Instagram, ArrowUpRight } from "lucide-react";
+import RumrLogo from "./RumrLogo";
 
 export default function Footer() {
   return (
@@ -165,34 +166,8 @@ export default function Footer() {
           className="flex flex-col md:flex-row justify-between items-center pt-10 gap-6"
           style={{ borderTop: "1px solid var(--rumr-border)" }}
         >
-          <div className="flex items-center gap-3">
-            <div
-              style={{
-                width: "26px",
-                height: "26px",
-                backgroundColor: "var(--rumr-green)",
-                borderRadius: "4px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <span
-                style={{
-                  color: "var(--rumr-text)",
-                  fontSize: "8px",
-                  fontWeight: 900,
-                }}
-              >
-                R
-              </span>
-            </div>
-            <span
-              className="text-sm font-bold tracking-tight"
-              style={{ color: "var(--rumr-text)" }}
-            >
-              {SITE_CONFIG.brand.name}
-            </span>
+          <div className="flex items-center">
+            <RumrLogo height={18} fill="var(--rumr-text)" />
           </div>
           <div
             className="text-[11px] uppercase tracking-widest"

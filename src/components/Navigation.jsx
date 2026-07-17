@@ -14,6 +14,7 @@ import {
   Home,
 } from "lucide-react";
 import { SITE_CONFIG } from "../data/config";
+import RumrLogo from "./RumrLogo";
 
 /* Icon map for each nav item */
 const NAV_ICONS = {
@@ -90,49 +91,46 @@ export default function Navigation() {
             textDecoration: "none",
             display: "flex",
             alignItems: "center",
-            gap: "12px",
+            height: "32px",
             padding: "0 20px",
             marginBottom: "48px",
             whiteSpace: "nowrap",
           }}
         >
-          <div
-            style={{
-              width: "32px",
-              height: "32px",
-              minWidth: "32px",
-              backgroundColor: "var(--rumr-green)",
-              borderRadius: "6px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <span
+          {hovered ? (
+            <motion.div
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            >
+              <RumrLogo height={20} fill="var(--rumr-text)" />
+            </motion.div>
+          ) : (
+            <div
               style={{
-                color: "var(--rumr-text)",
-                fontSize: "11px",
-                fontWeight: 900,
-                letterSpacing: "0.04em",
+                width: "32px",
+                height: "32px",
+                minWidth: "32px",
+                backgroundColor: "var(--rumr-green)",
+                borderRadius: "6px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              R
-            </span>
-          </div>
-          <span
-            style={{
-              color: "var(--rumr-text)",
-              fontSize: "12px",
-              fontWeight: 800,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              opacity: hovered ? 1 : 0,
-              transition: "opacity 0.3s ease",
-            }}
-          >
-            RUMR STUDIOS
-          </span>
+              <span
+                style={{
+                  color: "var(--rumr-text)",
+                  fontSize: "11px",
+                  fontWeight: 900,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                R
+              </span>
+            </div>
+          )}
         </Link>
 
         {/* ── Nav links ── */}
@@ -299,43 +297,9 @@ export default function Navigation() {
               textDecoration: "none",
               display: "flex",
               alignItems: "center",
-              gap: "10px",
             }}
           >
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                backgroundColor: "var(--rumr-green)",
-                borderRadius: "4px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <span
-                style={{
-                  color: "var(--rumr-text)",
-                  fontSize: "9px",
-                  fontWeight: 900,
-                  letterSpacing: "0.04em",
-                }}
-              >
-                R
-              </span>
-            </div>
-            <span
-              style={{
-                color: "var(--rumr-text)",
-                fontSize: "13px",
-                fontWeight: 800,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-              }}
-            >
-              RUMR STUDIOS
-            </span>
+            <RumrLogo height={18} fill="var(--rumr-text)" />
           </Link>
 
           {/* ── Desktop Nav Links ── */}
@@ -434,35 +398,9 @@ export default function Navigation() {
             textDecoration: "none",
             display: "flex",
             alignItems: "center",
-            gap: "10px",
           }}
         >
-          <div
-            style={{
-              width: "26px",
-              height: "26px",
-              backgroundColor: "var(--rumr-green)",
-              borderRadius: "4px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span style={{ color: "var(--rumr-text)", fontSize: "8px", fontWeight: 900 }}>
-              R
-            </span>
-          </div>
-          <span
-            style={{
-              color: "var(--rumr-text)",
-              fontSize: "12px",
-              fontWeight: 800,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-            }}
-          >
-            RUMR STUDIOS
-          </span>
+          <RumrLogo height={16} fill="var(--rumr-text)" />
         </Link>
 
         <button
@@ -528,35 +466,8 @@ export default function Navigation() {
 
             {/* Top bar */}
             <div className="flex justify-between items-center relative z-10">
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div
-                  style={{
-                    width: "26px",
-                    height: "26px",
-                    backgroundColor: "var(--rumr-green)",
-                    borderRadius: "4px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <span
-                    style={{ color: "var(--rumr-text)", fontSize: "8px", fontWeight: 900 }}
-                  >
-                    R
-                  </span>
-                </div>
-                <span
-                  style={{
-                    color: "var(--rumr-text)",
-                    fontSize: "12px",
-                    fontWeight: 800,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  RUMR STUDIOS
-                </span>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <RumrLogo height={16} fill="var(--rumr-text)" />
               </div>
               <button
                 onClick={() => setIsOpen(false)}
