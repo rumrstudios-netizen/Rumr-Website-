@@ -103,7 +103,7 @@ export default function Navigation() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
             >
-              <RumrLogo height={20} fill="var(--rumr-text)" />
+              <RumrLogo height={44} />
             </motion.div>
           ) : (
             <RumrIcon size={32} />
@@ -276,7 +276,7 @@ export default function Navigation() {
               alignItems: "center",
             }}
           >
-            <RumrLogo height={18} fill="var(--rumr-text)" />
+            <RumrLogo height={36} />
           </Link>
 
           {/* ── Desktop Nav Links ── */}
@@ -377,7 +377,7 @@ export default function Navigation() {
             alignItems: "center",
           }}
         >
-          <RumrLogo height={16} fill="var(--rumr-text)" />
+          <RumrLogo height={32} />
         </Link>
 
         <button
@@ -444,7 +444,7 @@ export default function Navigation() {
             {/* Top bar */}
             <div className="flex justify-between items-center relative z-10">
               <div style={{ display: "flex", alignItems: "center" }}>
-                <RumrLogo height={16} fill="var(--rumr-text)" />
+                <RumrLogo height={32} />
               </div>
               <button
                 onClick={() => setIsOpen(false)}

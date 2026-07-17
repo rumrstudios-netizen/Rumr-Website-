@@ -164,10 +164,9 @@ export default function Footer() {
         {/* Bottom bar */}
         <div
           className="flex flex-col md:flex-row justify-between items-center pt-10 gap-6"
-          style={{ borderTop: "1px solid var(--rumr-border)" }}
         >
           <div className="flex items-center">
-            <RumrLogo height={18} fill="var(--rumr-text)" />
+            <RumrLogo height={36} />
           </div>
           <div
             className="text-[11px] uppercase tracking-widest"
