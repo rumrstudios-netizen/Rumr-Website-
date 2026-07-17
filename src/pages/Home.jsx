@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, useSpring } from "motion/react";
 import { ArrowRight, Play, ExternalLink, MapPin, FolderOpen } from "lucide-react";
 import Hero3D from "../components/Hero3D";
 import { SITE_CONFIG } from "../data/config";
@@ -41,24 +41,60 @@ function Reveal({ children, className = "", delay = 0 }) {
 /* ── Full-viewport work card (scroll-jacked section) ── */
 function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActive }) {
   const step = 1 / (totalSlides - 1);
-  const center = (index + 1) * step;
-  const isLast = index === totalSlides - 2;
+  const enterPoint = index * step;
+  const activePoint = (index + 1) * step;
 
-  const inputRange = isLast
-    ? [center - step, center]
-    : [center - step, center, center + step];
+  // Build keyframes for enter -> active -> stacked states
+  const points = [enterPoint, activePoint];
+  if (activePoint + step <= 1.001) points.push(activePoint + step);
+  if (activePoint + step * 2 <= 1.001) points.push(activePoint + step * 2);
+  if (points[points.length - 1] < 1.0) points.push(1.0);
 
-  const scale = useTransform(scrollProgress, inputRange, isLast ? [0.82, 1] : [0.82, 1, 0.82]);
-  const rotate = useTransform(scrollProgress, inputRange, isLast ? [3, 0] : [3, 0, -3]);
-  const opacity = useTransform(scrollProgress, inputRange, isLast ? [0.35, 1] : [0.35, 1, 0.35]);
-  
-  const imgRange = isLast ? [center - step, center] : [center - step, center + step];
-  const imgY = useTransform(scrollProgress, imgRange, isLast ? ["-5%", "0%"] : ["-5%", "5%"]);
+  const translateYValues = points.map((p) => {
+    if (p <= enterPoint) return "100vh";
+    if (p === activePoint) return "0vh";
+    if (p === activePoint + step) return "-35px";
+    if (p === activePoint + step * 2) return "-70px";
+    return "-105px";
+  });
+
+  const scaleValues = points.map((p) => {
+    if (p <= enterPoint) return 0.9;
+    if (p === activePoint) return 1.0;
+    if (p === activePoint + step) return 0.95;
+    if (p === activePoint + step * 2) return 0.91;
+    return 0.87;
+  });
+
+  const opacityValues = points.map((p) => {
+    if (p <= enterPoint) return 0.0;
+    if (p === activePoint) return 1.0;
+    if (p === activePoint + step) return 0.95;
+    if (p === activePoint + step * 2) return 0.85;
+    return 0.75;
+  });
+
+  const rotateValues = points.map((p) => {
+    if (p <= enterPoint) return 4;
+    if (p === activePoint) return 0;
+    if (p === activePoint + step) return -2;
+    if (p === activePoint + step * 2) return 1;
+    return -1;
+  });
+
+  const translateY = useTransform(scrollProgress, points, translateYValues);
+  const scale = useTransform(scrollProgress, points, scaleValues);
+  const opacity = useTransform(scrollProgress, points, opacityValues);
+  const rotate = useTransform(scrollProgress, points, rotateValues);
+
+  const imgY = useTransform(scrollProgress, [enterPoint, activePoint], ["-6%", "0%"]);
 
   return (
     <motion.div
       style={{
-        flexShrink: 0,
+        position: "absolute",
+        top: 0,
+        left: 0,
         width: "100vw",
         height: "100vh",
         display: "flex",
@@ -66,7 +102,9 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
         justifyContent: "center",
         padding: "clamp(2rem, 5vw, 6rem)",
         boxSizing: "border-box",
-        position: "relative",
+        y: translateY,
+        zIndex: index + 10,
+        opacity,
       }}
     >
       <motion.div
@@ -78,7 +116,12 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           border: "1px solid rgba(11, 117, 98, 0.15)",
           borderRadius: "20px",
           scale,
-          rotate: useTransform(scrollProgress, inputRange, isLast ? [5, 2] : [5, 2, -1]),
+          rotate: useTransform(scrollProgress, points, points.map(p => {
+            if (p <= enterPoint) return 5;
+            if (p === activePoint) return 2;
+            if (p === activePoint + step) return -1;
+            return -3;
+          })),
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -91,7 +134,6 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           height: "100%",
           scale,
           rotate,
-          opacity,
           zIndex: 2,
           pointerEvents: isActive ? "auto" : "none",
         }}
@@ -346,9 +388,15 @@ export default function HomePage() {
   const workSectionRef = useRef(null);
   const totalProjects = SITE_CONFIG.projects.length;
   const totalSlides = totalProjects + 1;
-  const { scrollYProgress: workProgress } = useScroll({
+  const step = 1 / (totalSlides - 1);
+  const { scrollYProgress: rawWorkProgress } = useScroll({
     target: workSectionRef,
     offset: ["start start", "end end"],
+  });
+  const workProgress = useSpring(rawWorkProgress, {
+    stiffness: 220,
+    damping: 30,
+    restDelta: 0.001
   });
   const [activeWorkIndex, setActiveWorkIndex] = useState(0);
   useMotionValueEvent(workProgress, "change", (v) => {
@@ -596,28 +644,30 @@ export default function HomePage() {
             alignItems: "center",
           }}
         >
-          {/* Horizontal Sliding Track */}
-          <motion.div
+          {/* Stacked Cards Container */}
+          <div
             style={{
-              display: "flex",
-              flexDirection: "row",
-              width: `${totalSlides * 100}vw`,
+              position: "relative",
+              width: "100%",
               height: "100vh",
-              x,
             }}
           >
             {/* Slide 0: Typographic Intro Header */}
             <motion.div
               style={{
-                flexShrink: 0,
+                position: "absolute",
+                top: 0,
+                left: 0,
                 width: "100vw",
                 height: "100vh",
                 display: "flex",
                 alignItems: "center",
                 boxSizing: "border-box",
                 paddingLeft: "clamp(2rem, 8vw, 12rem)",
-                opacity: useTransform(workProgress, [0, 1 / (totalSlides - 1)], [1, 0]),
-                scale: useTransform(workProgress, [0, 1 / (totalSlides - 1)], [1, 0.9]),
+                opacity: useTransform(workProgress, [0, step], [1, 0]),
+                scale: useTransform(workProgress, [0, step], [1, 0.9]),
+                y: useTransform(workProgress, [0, step], ["0vh", "-10vh"]),
+                zIndex: 5,
               }}
             >
               <div>
@@ -690,7 +740,7 @@ export default function HomePage() {
                 isActive={activeWorkIndex === index + 1}
               />
             ))}
-          </motion.div>
+          </div>
 
           {/* Progress dots */}
           <div
