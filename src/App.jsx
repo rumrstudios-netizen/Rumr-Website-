@@ -41,17 +41,24 @@ function AppShell() {
       <div className="grain-overlay" aria-hidden="true" />
       <CustomCursor />
       <Navigation />
-      <main className="relative z-10">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/work" element={<Work />} />
-          <Route path="/work/:brandId" element={<BrandDetail />} />
-        </Routes>
-      </main>
-      <Footer />
+      {/* Sidebar offset wrapper */}
+      <div className="rumr-content-area">
+        <style>{`
+          .rumr-content-area { transition: margin-left 0.3s ease; }
+          @media(min-width:768px){ .rumr-content-area { margin-left: 72px; } }
+        `}</style>
+        <main className="relative z-10">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/work" element={<Work />} />
+            <Route path="/work/:brandId" element={<BrandDetail />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }
