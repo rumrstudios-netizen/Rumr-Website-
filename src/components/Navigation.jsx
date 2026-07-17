@@ -14,7 +14,7 @@ import {
   Home,
 } from "lucide-react";
 import { SITE_CONFIG } from "../data/config";
-import RumrLogo from "./RumrLogo";
+import RumrLogo, { RumrIcon } from "./RumrLogo";
 
 /* Icon map for each nav item */
 const NAV_ICONS = {
@@ -106,30 +106,7 @@ export default function Navigation() {
               <RumrLogo height={20} fill="var(--rumr-text)" />
             </motion.div>
           ) : (
-            <div
-              style={{
-                width: "32px",
-                height: "32px",
-                minWidth: "32px",
-                backgroundColor: "var(--rumr-green)",
-                borderRadius: "6px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <span
-                style={{
-                  color: "var(--rumr-text)",
-                  fontSize: "11px",
-                  fontWeight: 900,
-                  letterSpacing: "0.04em",
-                }}
-              >
-                R
-              </span>
-            </div>
+            <RumrIcon size={32} />
           )}
         </Link>
 

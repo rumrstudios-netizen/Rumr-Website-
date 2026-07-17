@@ -104,3 +104,35 @@ export default function RumrLogo({ className = "", height = 36, fill = "currentC
     </svg>
   );
 }
+
+export function RumrIcon({ className = "", size = 32, fill = "#F3F0E8" }) {
+  return (
+    <div
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        minWidth: `${size}px`,
+        backgroundColor: "var(--rumr-green)",
+        borderRadius: size > 28 ? "6px" : "4px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      <svg
+        viewBox="0 0 24 60"
+        height={size * 0.58}
+        className={className}
+        style={{ display: "inline-block", verticalAlign: "middle" }}
+      >
+        <rect x="0" y="0" width="5.5" height="60" fill={fill} />
+        <path
+          d="M 5.5,0 L 14,0 C 19.5,0 22,3.5 22,13.5 C 22,23.5 19.5,27 14,27 L 5.5,27 Z M 5.5,5.5 L 13.5,5.5 C 16.5,5.5 16.5,7.5 16.5,13.5 C 16.5,19.5 16.5,21.5 13.5,21.5 L 5.5,21.5 Z"
+          fill={fill}
+        />
+        <rect x="16.5" y="27" width="5.5" height="33" fill={fill} />
+      </svg>
+    </div>
+  );
+}
