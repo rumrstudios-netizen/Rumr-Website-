@@ -547,30 +547,95 @@ export default function HomePage() {
 
         {/* Scroll indicator */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.4 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.4, duration: 0.8 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
           style={{ zIndex: 10 }}
         >
-          <span
+          <motion.span
+            animate={{
+              opacity: [0.4, 0.8, 0.4],
+            }}
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
             style={{
               fontSize: "9px",
               textTransform: "uppercase",
               letterSpacing: "0.4em",
               color: "var(--rumr-text2)",
+              fontWeight: 500,
+              marginBottom: "4px",
             }}
           >
             Scroll to enter the studio
-          </span>
+          </motion.span>
+
+          {/* Mouse Capsule */}
           <div
             style={{
-              width: "1px",
-              height: "48px",
-              background:
-                "linear-gradient(to bottom, var(--rumr-green-h), transparent)",
+              width: "20px",
+              height: "32px",
+              borderRadius: "10px",
+              border: "1.5px solid rgba(255, 255, 255, 0.15)",
+              display: "flex",
+              justifyContent: "center",
+              paddingTop: "6px",
+              boxSizing: "border-box",
             }}
-          />
+          >
+            <motion.div
+              animate={{
+                y: [0, 10, 0],
+                opacity: [1, 0, 1],
+              }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              style={{
+                width: "3px",
+                height: "6px",
+                borderRadius: "1.5px",
+                backgroundColor: "var(--rumr-green-soft)",
+                boxShadow: "0 0 8px var(--rumr-green-soft)",
+              }}
+            />
+          </div>
+
+          {/* Track line with sliding glow */}
+          <div
+            style={{
+              position: "relative",
+              width: "1px",
+              height: "50px",
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              overflow: "hidden",
+            }}
+          >
+            <motion.div
+              animate={{
+                y: ["-100%", "250%"],
+              }}
+              transition={{
+                duration: 2.2,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "30%",
+                background: "linear-gradient(to bottom, transparent, var(--rumr-green-soft), transparent)",
+              }}
+            />
+          </div>
         </motion.div>
 
         <style>{`
