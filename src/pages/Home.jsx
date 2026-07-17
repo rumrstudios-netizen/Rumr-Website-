@@ -550,8 +550,8 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.4, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
-          style={{ zIndex: 10 }}
+          className="absolute bottom-8 flex flex-col items-center gap-3"
+          style={{ left: "50%", transform: "translateX(-50%)", zIndex: 10 }}
         >
           <motion.span
             animate={{
