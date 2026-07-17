@@ -163,7 +163,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
               style={{
                 fontFamily: "monospace",
                 fontSize: "10px",
-                color: "var(--rumr-green-soft)",
+                color: "var(--rumr-red)",
                 fontWeight: 700,
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
@@ -336,8 +336,8 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  backgroundColor: "var(--rumr-green)",
-                  boxShadow: "0 0 30px rgba(11,117,98,0.4)",
+                  backgroundColor: "var(--rumr-red)",
+                  boxShadow: "0 0 30px rgba(255,0,0,0.4)",
                   transition: "transform 0.3s ease",
                 }}
               >

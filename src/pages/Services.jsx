@@ -157,7 +157,7 @@ export default function ServicesPage() {
                       letterSpacing: "0.3em",
                       marginBottom: "28px",
                       fontWeight: 700,
-                      color: "var(--rumr-green-soft)",
+                      color: "var(--rumr-red)",
                     }}
                   >
                     Deliverables
