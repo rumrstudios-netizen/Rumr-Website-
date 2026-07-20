@@ -488,8 +488,8 @@ export default function Hero3D() {
     camera.lookAt(1.3, 0.1, 0);
 
     const productRig = new THREE.Group();
-    productRig.position.set(4, 0.25, 0);
-    productRig.rotation.set(1, -0.8, 0.06);
+    productRig.position.set(4, -0.067, 0);
+    productRig.rotation.set(-0.075, -0.67, 0.06);
     scene.add(productRig);
 
     scene.add(new THREE.HemisphereLight(0xfbfffc, 0x0a1215, 4.5));

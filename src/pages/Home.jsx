@@ -5,6 +5,11 @@ import { ArrowRight, Play, ExternalLink, MapPin, FolderOpen } from "lucide-react
 import Hero3D from "../components/Hero3D";
 import { SITE_CONFIG } from "../data/config";
 import VideoModal from "../components/VideoModal";
+import ThreeDHoverGallery from "../components/ThreeDHoverGallery";
+import MagneticButton from "../components/MagneticButton";
+import StaggeredText from "../components/StaggeredText";
+import ParallaxImage from "../components/ParallaxImage";
+import GlowCard from "../components/GlowCard";
 
 /* â”€â”€ Tiny label â€” muted green or red depending on context â”€â”€ */
 function EyebrowLabel({ children, red = false }) {
@@ -38,56 +43,35 @@ function Reveal({ children, className = "", delay = 0 }) {
   );
 }
 
-/* ── Full-viewport work card (scroll-jacked section) ── */
+/* ── Full-viewport work card (3D Horizontal Scroll) ── */
 function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActive }) {
   const step = 1 / (totalSlides - 1);
-  const enterPoint = index * step;
   const activePoint = (index + 1) * step;
 
-  // Build keyframes for enter -> active -> stacked states
-  const points = [enterPoint, activePoint];
-  if (activePoint + step <= 1.001) points.push(activePoint + step);
-  if (activePoint + step * 2 <= 1.001) points.push(activePoint + step * 2);
-  if (points[points.length - 1] < 1.0) points.push(1.0);
+  // Build keyframes for Cover Flow (-2: far right, 0: center, 2: far left)
+  const points = [];
+  const xValues = [];
+  const rotateYValues = [];
+  const scaleValues = [];
+  const opacityValues = [];
+  const zIndexValues = [];
 
-  const translateYValues = points.map((p) => {
-    if (p <= enterPoint) return "100vh";
-    if (p === activePoint) return "0vh";
-    if (p === activePoint + step) return "-35px";
-    if (p === activePoint + step * 2) return "-70px";
-    return "-105px";
-  });
+  for (let i = -2; i <= 2; i++) {
+    points.push(activePoint + i * step);
+    xValues.push(`${i * 65}vw`); 
+    rotateYValues.push(i * -45); 
+    scaleValues.push(1 - Math.abs(i) * 0.2); 
+    opacityValues.push(1 - Math.abs(i) * 0.4); 
+    zIndexValues.push(50 - Math.abs(i) * 10);
+  }
 
-  const scaleValues = points.map((p) => {
-    if (p <= enterPoint) return 0.9;
-    if (p === activePoint) return 1.0;
-    if (p === activePoint + step) return 0.95;
-    if (p === activePoint + step * 2) return 0.91;
-    return 0.87;
-  });
-
-  const opacityValues = points.map((p) => {
-    if (p <= enterPoint) return 0.0;
-    if (p === activePoint) return 1.0;
-    if (p === activePoint + step) return 0.95;
-    if (p === activePoint + step * 2) return 0.85;
-    return 0.75;
-  });
-
-  const rotateValues = points.map((p) => {
-    if (p <= enterPoint) return 4;
-    if (p === activePoint) return 0;
-    if (p === activePoint + step) return -2;
-    if (p === activePoint + step * 2) return 1;
-    return -1;
-  });
-
-  const translateY = useTransform(scrollProgress, points, translateYValues);
+  const x = useTransform(scrollProgress, points, xValues);
+  const rotateY = useTransform(scrollProgress, points, rotateYValues);
   const scale = useTransform(scrollProgress, points, scaleValues);
   const opacity = useTransform(scrollProgress, points, opacityValues);
-  const rotate = useTransform(scrollProgress, points, rotateValues);
+  const dynamicZ = useTransform(scrollProgress, points, zIndexValues);
 
-  const imgY = useTransform(scrollProgress, [enterPoint, activePoint], ["-6%", "0%"]);
+  const imgY = useTransform(scrollProgress, [activePoint - step, activePoint], ["-6%", "0%"]);
 
   return (
     <motion.div
@@ -102,9 +86,11 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
         justifyContent: "center",
         padding: "clamp(2rem, 5vw, 6rem)",
         boxSizing: "border-box",
-        y: translateY,
-        zIndex: index + 10,
+        x,
+        zIndex: dynamicZ,
         opacity,
+        perspective: "2000px",
+        transformStyle: "preserve-3d",
       }}
     >
       <motion.div
@@ -116,12 +102,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           border: "1px solid rgba(11, 117, 98, 0.15)",
           borderRadius: "20px",
           scale,
-          rotate: useTransform(scrollProgress, points, points.map(p => {
-            if (p <= enterPoint) return 5;
-            if (p === activePoint) return 2;
-            if (p === activePoint + step) return -1;
-            return -3;
-          })),
+          rotateY,
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -134,7 +115,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           aspectRatio: "16 / 10",
           maxHeight: "85%",
           scale,
-          rotate,
+          rotateY,
           zIndex: 2,
           pointerEvents: isActive ? "auto" : "none",
         }}
@@ -480,19 +461,21 @@ export default function HomePage() {
                 color: "var(--rumr-text)",
                 lineHeight: 0.84,
                 margin: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
               }}
             >
-              EVERY GREAT
-              <br />
-              STORY STARTS
-              <br />
-              AS A{" "}
-              <em
+              <StaggeredText text={"EVERY GREAT\nSTORY STARTS\nAS A"} delay={0.4} />
+              <motion.em
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0, duration: 0.8, ease: "easeOut" }}
                 className="serif-italic"
-                style={{ color: "var(--rumr-green-soft)" }}
+                style={{ color: "var(--rumr-green-soft)", display: "inline-block" }}
               >
                 RUMR.
-              </em>
+              </motion.em>
             </h1>
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mt-4">
@@ -506,39 +489,41 @@ export default function HomePage() {
               >
                 {SITE_CONFIG.hero.subtitle}
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 mt-2">
                 {/* Primary â€” red showreel */}
-                <Link
-                  to="/contact"
-                  className="btn-red group"
-                  style={{
-                    padding: "16px 32px",
-                    fontSize: "13px",
-                    letterSpacing: "0.06em",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor =
-                      "var(--rumr-red-h)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "var(--rumr-red)")
-                  }
-                >
-                  <Play size={14} fill="#fff" />
-                  VIEW SHOWREEL
+                <Link to="/contact">
+                  <MagneticButton
+                    className="btn-red group"
+                    data-cursor="PLAY"
+                    style={{
+                      padding: "16px 32px",
+                      fontSize: "13px",
+                      letterSpacing: "0.06em",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "var(--rumr-red-h)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "var(--rumr-red)")
+                    }
+                  >
+                    <Play size={14} fill="#fff" />
+                    VIEW SHOWREEL
+                  </MagneticButton>
                 </Link>
                 {/* Secondary â€” emerald outline */}
-                <Link
-                  to="/work"
-                  className="btn-emerald"
-                  style={{
-                    padding: "16px 32px",
-                    fontSize: "13px",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  EXPLORE OUR WORK
-                  <ArrowRight size={14} />
+                <Link to="/work">
+                  <MagneticButton
+                    className="btn-emerald"
+                    style={{
+                      padding: "16px 32px",
+                      fontSize: "13px",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    EXPLORE OUR WORK
+                    <ArrowRight size={14} />
+                  </MagneticButton>
                 </Link>
               </div>
             </div>
@@ -821,13 +806,13 @@ export default function HomePage() {
           <div
             style={{
               position: "absolute",
-              right: "2rem",
-              top: "50%",
-              transform: "translateY(-50%)",
+              bottom: "4rem",
+              left: "50%",
+              transform: "translateX(-50%)",
               display: "flex",
-              flexDirection: "column",
+              flexDirection: "row",
               gap: "14px",
-              zIndex: 10,
+              zIndex: 60,
             }}
           >
             {Array.from({ length: totalSlides }).map((_, index) => (
@@ -994,9 +979,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ———————————————————————————————————————————————— 
           PROCESS
-      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      ———————————————————————————————————————————————— */}
       <section
         className="py-36 px-6 md:px-12"
         
@@ -1028,59 +1013,59 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {SITE_CONFIG.process.map((step, i) => (
-              <motion.div
+              <GlowCard
                 key={step.id}
                 initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0, transition: { duration: 0.6, delay: i * 0.1 } }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="p-8 rounded-xl flex flex-col gap-8 cursor-default transition-all duration-400"
+                whileHover={{ 
+                  y: -8, 
+                  scale: 1.02,
+                  borderColor: "var(--rumr-green)",
+                  boxShadow: "0 20px 40px -10px rgba(5,75,64,0.3)",
+                  transition: { duration: 0.3, ease: "easeOut" }
+                }}
+                className="p-8 rounded-xl cursor-default"
                 style={{
                   backgroundColor: "var(--rumr-surface)",
                   border: "1px solid var(--rumr-border)",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--rumr-green-h)";
-                  e.currentTarget.style.boxShadow =
-                    "0 0 40px rgba(5,75,64,0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--rumr-border)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
               >
-                <span
-                  style={{
-                    fontSize: "10px",
-                    fontWeight: 700,
-                    letterSpacing: "0.3em",
-                    textTransform: "uppercase",
-                    color: "var(--rumr-red)",
-                  }}
-                >
-                  {step.id}
-                </span>
-                <h3
-                  style={{
-                    fontSize: "22px",
-                    fontWeight: 900,
-                    letterSpacing: "-0.03em",
-                    textTransform: "uppercase",
-                    color: "var(--rumr-text)",
-                  }}
-                >
-                  {step.title}
-                </h3>
-                <p
-                  style={{
-                    fontSize: "13px",
-                    lineHeight: 1.65,
-                    color: "var(--rumr-text2)",
-                  }}
-                >
-                  {step.description}
-                </p>
-              </motion.div>
+                <div className="flex flex-col gap-8 h-full">
+                  <span
+                    style={{
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      letterSpacing: "0.3em",
+                      textTransform: "uppercase",
+                      color: "var(--rumr-red)",
+                    }}
+                  >
+                    {step.id}
+                  </span>
+                  <h3
+                    style={{
+                      fontSize: "22px",
+                      fontWeight: 900,
+                      letterSpacing: "-0.03em",
+                      textTransform: "uppercase",
+                      color: "var(--rumr-text)",
+                    }}
+                  >
+                    {step.title}
+                  </h3>
+                  <p
+                    className="mt-auto"
+                    style={{
+                      fontSize: "13px",
+                      lineHeight: 1.65,
+                      color: "var(--rumr-text2)",
+                    }}
+                  >
+                    {step.description}
+                  </p>
+                </div>
+              </GlowCard>
             ))}
           </div>
         </div>
@@ -1139,6 +1124,7 @@ export default function HomePage() {
                 <Link
                   to="/about"
                   className="btn-emerald"
+                  data-cursor="ABOUT"
                   style={{ padding: "14px 28px", fontSize: "12px" }}
                 >
                   Meet RUMR
@@ -1173,18 +1159,17 @@ export default function HomePage() {
                 <motion.div
                   key={i}
                   className="overflow-hidden rounded-xl"
+                  data-cursor="VIEW"
                   style={{ marginTop: i % 2 === 1 ? "48px" : "0" }}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <img
+                  <ParallaxImage
                     src={src}
                     alt={`BTS ${i + 1}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full object-cover transition-all duration-700"
+                    className="w-full transition-all duration-700"
                     style={{
                       height: "180px",
                       filter: "grayscale(60%) brightness(0.55)",
@@ -1385,25 +1370,29 @@ export default function HomePage() {
               Tell us what you are building. We'll bring the visual energy.
             </p>
             <div className="flex flex-col md:flex-row justify-center gap-5">
-              <Link
-                to="/contact"
-                className="btn-red"
-                style={{ padding: "20px 48px", fontSize: "15px" }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "var(--rumr-red-h)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "var(--rumr-red)")
-                }
-              >
-                Start a Project
+              <Link to="/contact">
+                <MagneticButton
+                  className="btn-red"
+                  data-cursor="START"
+                  style={{ padding: "20px 48px", fontSize: "15px" }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "var(--rumr-red-h)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "var(--rumr-red)")
+                  }
+                >
+                  Start a Project
+                </MagneticButton>
               </Link>
-              <a
-                href={`mailto:${SITE_CONFIG.brand.email}`}
-                className="btn-emerald"
-                style={{ padding: "20px 48px", fontSize: "15px" }}
-              >
-                Email RUMR
+              <a href={`mailto:${SITE_CONFIG.brand.email}`}>
+                <MagneticButton
+                  className="btn-emerald"
+                  data-cursor="MAIL"
+                  style={{ padding: "20px 48px", fontSize: "15px" }}
+                >
+                  Email RUMR
+                </MagneticButton>
               </a>
             </div>
             <div className="mt-14 flex flex-col md:flex-row justify-center items-center gap-6">
