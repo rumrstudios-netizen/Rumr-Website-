@@ -5,7 +5,6 @@ import { ArrowRight, Play, ExternalLink, MapPin, FolderOpen } from "lucide-react
 import Hero3D from "../components/Hero3D";
 import { SITE_CONFIG } from "../data/config";
 import VideoModal from "../components/VideoModal";
-import ThreeDHoverGallery from "../components/ThreeDHoverGallery";
 import MagneticButton from "../components/MagneticButton";
 import StaggeredText from "../components/StaggeredText";
 import ParallaxImage from "../components/ParallaxImage";
@@ -105,6 +104,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           rotateY,
           zIndex: 1,
           pointerEvents: "none",
+          willChange: "transform",
         }}
       />
 
@@ -118,6 +118,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           rotateY,
           zIndex: 2,
           pointerEvents: isActive ? "auto" : "none",
+          willChange: "transform",
         }}
       >
         <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -376,14 +377,16 @@ export default function HomePage() {
     offset: ["start start", "end end"],
   });
   const workProgress = useSpring(rawWorkProgress, {
-    stiffness: 500,
-    damping: 50,
-    restDelta: 0.001
+    stiffness: 180,
+    damping: 28,
+    restDelta: 0.005
   });
   const [activeWorkIndex, setActiveWorkIndex] = useState(0);
   useMotionValueEvent(workProgress, "change", (v) => {
     const idx = Math.round(v * (totalSlides - 1));
-    setActiveWorkIndex(idx);
+    if (idx !== activeWorkIndex) {
+      setActiveWorkIndex(idx);
+    }
   });
   const x = useTransform(workProgress, [0, 1], ["0vw", `-${(totalSlides - 1) * 100}vw`]);
   const scrollHintOpacity = useTransform(workProgress, [0, 0.15], [0.6, 0]);

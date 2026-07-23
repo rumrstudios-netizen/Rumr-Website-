@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 /*
-  CosmicDust — adapted from Lightswind UI.
-  Canvas-based particle field with mouse-reactive vortex physics.
-  Replaces the Three.js GlobalParticles with a lighter, more interactive effect.
+  CosmicDust — High-performance canvas particle field.
+  Optimized with zero shadowBlur, smooth physics, and visibility-aware animation loop.
 */
 export default function CosmicDust({
-  particleCount = 120,
+  particleCount = 160,
   speedMultiplier = 1.0,
-  particleSize = 1.5,
+  particleSize = 1.2,
 }) {
   const canvasRef = useRef(null);
   const mouseRef = useRef({
@@ -22,17 +21,17 @@ export default function CosmicDust({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     let animationId;
-    let width = (canvas.width = canvas.offsetWidth);
-    let height = (canvas.height = canvas.offsetHeight);
+    let isVisible = true;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
 
     mouseRef.current.targetX = width / 2;
     mouseRef.current.targetY = height / 2;
 
-    // Rumr brand palette — emerald / red / warm cream
     const colors = [
       "rgba(72, 209, 173,",   // emerald / mint (brand green)
       "rgba(255, 59, 48,",    // crimson (brand red)
@@ -61,26 +60,47 @@ export default function CosmicDust({
       createParticle(true)
     );
 
+    let resizeTimer;
     const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = canvas.offsetWidth;
-      height = canvas.height = canvas.offsetHeight;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (!canvas) return;
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }, 150);
     };
     window.addEventListener("resize", handleResize);
 
+    let mouseRafPending = false;
     const handleMouseMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current.targetX = e.clientX - rect.left;
-      mouseRef.current.targetY = e.clientY - rect.top;
-      mouseRef.current.hasMoved = true;
+      if (mouseRafPending) return;
+      mouseRafPending = true;
+      requestAnimationFrame(() => {
+        mouseRef.current.targetX = e.clientX;
+        mouseRef.current.targetY = e.clientY;
+        mouseRef.current.hasMoved = true;
+        mouseRafPending = false;
+      });
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
+    const handleVisibilityChange = () => {
+      isVisible = !document.hidden;
+      if (isVisible) {
+        lastTime = performance.now();
+        animationId = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    let lastTime = performance.now();
+
     const animate = (t) => {
+      if (!isVisible) return;
       animationId = requestAnimationFrame(animate);
+
       ctx.clearRect(0, 0, width, height);
 
-      // Idle orbit when no mouse input
       if (!mouseRef.current.hasMoved) {
         const cx = width / 2;
         const cy = height / 2;
@@ -89,84 +109,76 @@ export default function CosmicDust({
         mouseRef.current.targetY = cy + Math.sin(t * 0.001) * radius;
       }
 
-      mouseRef.current.x +=
-        (mouseRef.current.targetX - mouseRef.current.x) * 0.08;
-      mouseRef.current.y +=
-        (mouseRef.current.targetY - mouseRef.current.y) * 0.08;
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.08;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.08;
 
       const mX = mouseRef.current.x;
       const mY = mouseRef.current.y;
 
-      particles.forEach((p, index) => {
-        // Natural drift
+      for (let index = 0; index < particles.length; index++) {
+        const p = particles[index];
         p.vx += Math.sin(t * 0.002 + index) * 0.02 * speedMultiplier;
 
-        // Mouse vortex interaction
         const dx = mX - p.x;
         const dY = mY - p.y;
-        const dist = Math.sqrt(dx * dx + dY * dY);
+        const distSq = dx * dx + dY * dY;
         const influenceRadius = 180;
+        const influenceRadiusSq = influenceRadius * influenceRadius;
 
-        if (dist < influenceRadius) {
-          const force =
-            (1.0 - dist / influenceRadius) * 0.8 * speedMultiplier;
+        if (distSq < influenceRadiusSq) {
+          const dist = Math.sqrt(distSq) || 1;
+          const force = (1.0 - dist / influenceRadius) * 0.8 * speedMultiplier;
           p.vx += (dx / dist) * force * 0.04;
           p.vy += (dY / dist) * force * 0.04;
 
-          // Tangential swirl
           const tx = -dY / dist;
           const ty = dx / dist;
           p.vx += tx * force * 0.18;
           p.vy += ty * force * 0.18;
         }
 
-        // Friction
         p.vx *= 0.96;
         p.vy *= 0.96;
 
         p.x += p.vx;
         p.y += p.vy;
 
-        // Trail history
         p.history.push({ x: p.x, y: p.y });
-        if (p.history.length > 6) p.history.shift();
+        if (p.history.length > 5) p.history.shift();
 
-        // Reset if offscreen
         if (p.y < -10 || p.x < -10 || p.x > width + 10) {
           particles[index] = createParticle(false);
-          return;
+          continue;
         }
 
-        // Draw trail
+        // Draw particle trail (clean lines without glow filters)
         if (p.history.length > 1) {
           ctx.beginPath();
           ctx.moveTo(p.history[0].x, p.history[0].y);
           for (let i = 1; i < p.history.length; i++) {
             ctx.lineTo(p.history[i].x, p.history[i].y);
           }
-          ctx.strokeStyle = `${p.color}${p.opacity * 0.35})`;
+          ctx.strokeStyle = `${p.color}${p.opacity * 0.3})`;
           ctx.lineWidth = p.size * 0.6;
-          ctx.lineCap = "round";
           ctx.stroke();
         }
 
-        // Draw particle core with glow
+        // Draw core particle (NO expensive shadowBlur)
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = `${p.color}0.8)`;
         ctx.fillStyle = `${p.color}${p.opacity})`;
         ctx.fill();
-        ctx.shadowBlur = 0;
-      });
+      }
     };
 
     animationId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationId);
+      clearTimeout(resizeTimer);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [particleCount, speedMultiplier, particleSize]);
 
@@ -181,8 +193,10 @@ export default function CosmicDust({
         height: "100vh",
         zIndex: 0,
         pointerEvents: "none",
+        willChange: "transform",
       }}
       aria-hidden="true"
     />
   );
 }
+

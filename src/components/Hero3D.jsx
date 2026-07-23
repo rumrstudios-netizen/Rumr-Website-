@@ -571,6 +571,30 @@ export default function Hero3D() {
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", handlePointerMove, { passive: true });
 
+    let isIntersecting = true;
+    let isTabVisible = !document.hidden;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isIntersecting = entry.isIntersecting;
+        if (isIntersecting && isTabVisible && !frameId) {
+          clock.start();
+          animate();
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
+
+    const handleVisibilityChange = () => {
+      isTabVisible = !document.hidden;
+      if (isIntersecting && isTabVisible && !frameId) {
+        clock.start();
+        animate();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const loadCamera = async () => {
       try {
         const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
@@ -590,7 +614,7 @@ export default function Hero3D() {
         loader.setDRACOLoader(dracoLoader);
 
         loader.load(
-          "/red_digital_cinema_weapon_dragon_8k_camera_optimized.glb",
+          "/camera.glb",
           (gltf) => {
             if (disposed) {
               disposeObject(gltf.scene);
@@ -650,7 +674,7 @@ export default function Hero3D() {
 
             productRig.add(model);
           },
-          undefined, // Remove progress handler — logging every % hurts perf
+          undefined,
           (error) => {
             console.error('An error happened loading the GLB model:', error);
           }
@@ -663,6 +687,10 @@ export default function Hero3D() {
 
     const clock = new THREE.Clock();
     const animate = () => {
+      if (!isIntersecting || !isTabVisible) {
+        frameId = null;
+        return;
+      }
       frameId = window.requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
@@ -685,7 +713,9 @@ export default function Hero3D() {
 
     return () => {
       disposed = true;
-      window.cancelAnimationFrame(frameId);
+      if (frameId) window.cancelAnimationFrame(frameId);
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       clearTimeout(resizeTimeout);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handlePointerMove);
@@ -696,6 +726,7 @@ export default function Hero3D() {
       renderer.dispose();
       renderer.domElement.remove();
     };
+
   }, []);
 
   return (

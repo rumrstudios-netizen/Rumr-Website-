@@ -32,11 +32,16 @@ export default function Navigation() {
 
   useEffect(() => {
     let ticking = false;
+    let lastScrolled = false;
     const handleScroll = () => {
       if (!ticking) {
         ticking = true;
         requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 60);
+          const isScrolled = window.scrollY > 60;
+          if (isScrolled !== lastScrolled) {
+            lastScrolled = isScrolled;
+            setScrolled(isScrolled);
+          }
           ticking = false;
         });
       }
@@ -259,7 +264,7 @@ export default function Navigation() {
           width: hovered ? `calc(100% - ${EXPANDED}px)` : `calc(100% - ${COLLAPSED}px)`,
           zIndex: 90,
           transition: "left 0.4s cubic-bezier(0.16,1,0.3,1), width 0.4s cubic-bezier(0.16,1,0.3,1), padding 0.45s cubic-bezier(0.16,1,0.3,1), background-color 0.45s ease, border-bottom 0.45s ease",
-          padding: scrolled ? "14px 0" : "26px 0",
+          padding: scrolled ? "10px 0" : "14px 0",
           backgroundColor: scrolled ? "rgba(9,11,11,0.9)" : "transparent",
           backdropFilter: scrolled ? "blur(20px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
@@ -276,7 +281,7 @@ export default function Navigation() {
               alignItems: "center",
             }}
           >
-            <RumrLogo height={120} useGreen={true} />
+            <RumrLogo height={scrolled ? 58 : 74} src="/Logo option 4.png" />
           </Link>
 
           {/* ── Desktop Nav Links ── */}
@@ -362,7 +367,7 @@ export default function Navigation() {
           left: 0,
           width: "100%",
           zIndex: 100,
-          padding: "14px 20px",
+          padding: "10px 18px",
           backgroundColor: "rgba(9,11,11,0.9)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
@@ -377,7 +382,7 @@ export default function Navigation() {
             alignItems: "center",
           }}
         >
-          <RumrLogo height={64} />
+          <RumrLogo height={50} src="/Logo option 4.png" />
         </Link>
 
         <button
@@ -444,7 +449,7 @@ export default function Navigation() {
             {/* Top bar */}
             <div className="flex justify-between items-center relative z-10">
               <div style={{ display: "flex", alignItems: "center" }}>
-                <RumrLogo height={64} />
+                <RumrLogo height={64} src="/Logo option 4.png" />
               </div>
               <button
                 onClick={() => setIsOpen(false)}

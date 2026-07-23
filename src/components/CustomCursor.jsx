@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 
@@ -8,38 +8,51 @@ export default function CustomCursor() {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Very tight spring for the main cursor dot
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.2 };
+  const hoverRef = useRef(false);
+  const contentRef = useRef("");
+
+  // Optimized spring config for fluid responsiveness
+  const springConfig = { damping: 28, stiffness: 350, mass: 0.15 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
+    let mouseRafPending = false;
+
     const handleMouseMove = (e) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+      if (mouseRafPending) return;
+      mouseRafPending = true;
+      requestAnimationFrame(() => {
+        mouseX.set(e.clientX);
+        mouseY.set(e.clientY);
+        mouseRafPending = false;
+      });
     };
     
     const handleMouseOver = (e) => {
       const target = e.target;
-      const closestInteractable = target.closest("a, button, [role='button'], [data-cursor]");
+      const closestInteractable = target?.closest?.("a, button, [role='button'], [data-cursor]");
       
       if (closestInteractable) {
-        setIsHovering(true);
-        const dataCursor = closestInteractable.getAttribute("data-cursor");
-        if (dataCursor) {
+        const dataCursor = closestInteractable.getAttribute("data-cursor") || "arrow";
+        if (!hoverRef.current || contentRef.current !== dataCursor) {
+          hoverRef.current = true;
+          contentRef.current = dataCursor;
+          setIsHovering(true);
           setCursorContent(dataCursor);
-        } else {
-          // If it's a link to an external site or standard link
-          setCursorContent("arrow"); 
         }
       } else {
-        setIsHovering(false);
-        setCursorContent("");
+        if (hoverRef.current) {
+          hoverRef.current = false;
+          contentRef.current = "";
+          setIsHovering(false);
+          setCursorContent("");
+        }
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseover", handleMouseOver, { passive: true });
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseover", handleMouseOver);
@@ -50,28 +63,28 @@ export default function CustomCursor() {
     return null;
   }
 
-  // Determine styles based on state
   const size = isHovering && cursorContent !== "arrow" ? 80 : isHovering ? 50 : 16;
-  const opacity = 1;
 
   return (
     <motion.div
       className="fixed top-0 left-0 rounded-full pointer-events-none z-[9999] flex items-center justify-center overflow-hidden"
       style={{
-        backgroundColor: "white",
+        backgroundColor: isHovering ? "rgba(255, 255, 255, 0.95)" : "rgba(255, 255, 255, 0.9)",
         color: isHovering ? "var(--rumr-red)" : "black",
         x: smoothX,
         y: smoothY,
         translateX: "-50%",
         translateY: "-50%",
-        mixBlendMode: isHovering ? "normal" : "difference", 
+        boxShadow: isHovering
+          ? "0 0 20px rgba(255,255,255,0.4)"
+          : "0 0 10px rgba(255,255,255,0.2)",
+        willChange: "transform",
       }}
       animate={{
         width: size,
         height: size,
-        opacity,
       }}
-      transition={{ type: "spring", stiffness: 200, damping: 20, mass: 0.3 }}
+      transition={{ type: "spring", stiffness: 260, damping: 24, mass: 0.2 }}
     >
       <AnimatePresence mode="wait">
         {isHovering && cursorContent && (
@@ -84,7 +97,7 @@ export default function CustomCursor() {
             className="flex items-center justify-center"
           >
             {cursorContent === "arrow" ? (
-              <ArrowUpRight size={24} strokeWidth={2.5} />
+              <ArrowUpRight size={22} strokeWidth={2.5} />
             ) : (
               <span
                 style={{
@@ -104,3 +117,4 @@ export default function CustomCursor() {
     </motion.div>
   );
 }
+
