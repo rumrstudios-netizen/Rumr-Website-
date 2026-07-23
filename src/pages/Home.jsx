@@ -94,22 +94,6 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
     >
       <motion.div
         style={{
-          position: "absolute",
-          width: "calc(100% - clamp(4rem, 10vw, 12rem))",
-          height: "calc(100% - clamp(4rem, 10vw, 12rem))",
-          backgroundColor: "rgba(11, 117, 98, 0.05)",
-          border: "1px solid rgba(11, 117, 98, 0.15)",
-          borderRadius: "20px",
-          scale,
-          rotateY,
-          zIndex: 1,
-          pointerEvents: "none",
-          willChange: "transform",
-        }}
-      />
-
-      <motion.div
-        style={{
           position: "relative",
           width: "72%",
           maxWidth: "920px",
