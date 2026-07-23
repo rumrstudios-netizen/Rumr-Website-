@@ -103,11 +103,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           rotateY,
           zIndex: 2,
           pointerEvents: isActive ? "auto" : "none",
-          willChange: "transform",
-          filter: isActive
-            ? "drop-shadow(0 0 20px rgba(255, 30, 30, 0.22)) drop-shadow(0 0 45px rgba(255, 0, 0, 0.1))"
-            : "drop-shadow(0 0 12px rgba(255, 30, 30, 0.12))",
-          transition: "filter 0.5s ease",
+          willChange: "transform, opacity",
         }}
       >
         <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -180,6 +176,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
                 filter: isActive ? "grayscale(10%) brightness(0.5)" : "grayscale(50%) brightness(0.3)",
                 y: imgY,
                 transition: "filter 0.5s ease",
+                willChange: "transform",
               }}
               onMouseEnter={(e) => {
                 if (isActive) {
@@ -367,9 +364,10 @@ export default function HomePage() {
     offset: ["start start", "end end"],
   });
   const workProgress = useSpring(rawWorkProgress, {
-    stiffness: 180,
-    damping: 28,
-    restDelta: 0.005
+    stiffness: 90,
+    damping: 22,
+    mass: 0.15,
+    restDelta: 0.0001
   });
   const [activeWorkIndex, setActiveWorkIndex] = useState(0);
   useMotionValueEvent(workProgress, "change", (v) => {

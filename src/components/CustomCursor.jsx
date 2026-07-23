@@ -11,22 +11,15 @@ export default function CustomCursor() {
   const hoverRef = useRef(false);
   const contentRef = useRef("");
 
-  // Optimized spring config for fluid responsiveness
-  const springConfig = { damping: 28, stiffness: 350, mass: 0.15 };
+  // Optimized spring config for fluid responsiveness without latency
+  const springConfig = { damping: 24, stiffness: 280, mass: 0.1 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    let mouseRafPending = false;
-
     const handleMouseMove = (e) => {
-      if (mouseRafPending) return;
-      mouseRafPending = true;
-      requestAnimationFrame(() => {
-        mouseX.set(e.clientX);
-        mouseY.set(e.clientY);
-        mouseRafPending = false;
-      });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
     
     const handleMouseOver = (e) => {
