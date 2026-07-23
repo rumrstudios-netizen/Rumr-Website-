@@ -614,7 +614,7 @@ export default function Hero3D() {
         loader.setDRACOLoader(dracoLoader);
 
         loader.load(
-          "/camera.glb",
+          "/red_digital_cinema_weapon_dragon_8k_camera_optimized.glb",
           (gltf) => {
             if (disposed) {
               disposeObject(gltf.scene);
