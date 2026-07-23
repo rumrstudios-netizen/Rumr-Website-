@@ -4,6 +4,7 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import CosmicDust from "./components/CosmicDust";
 import CustomCursor from "./components/CustomCursor";
+import OpeningAnimation from "./components/OpeningAnimation";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -28,11 +29,24 @@ function ScrollToTop() {
 }
 
 function AppShell() {
+  const alreadyPlayed =
+    typeof window !== "undefined" &&
+    window.sessionStorage.getItem("rumr_intro_played") === "1";
+  const [introActive, setIntroActive] = React.useState(!alreadyPlayed);
+  const [justRevealed, setJustRevealed] = React.useState(false);
+
+  const handleIntroDone = () => {
+    setIntroActive(false);
+    if (!alreadyPlayed) setJustRevealed(true);
+  };
+
   return (
     <div
       className="min-h-screen antialiased relative"
       style={{ backgroundColor: "var(--rumr-bg)", color: "var(--rumr-text)" }}
     >
+      {introActive && <OpeningAnimation onDone={handleIntroDone} />}
+      <div className={justRevealed ? "rumr-site-reveal" : ""}>
       <CustomCursor />
       <CosmicDust particleCount={160} speedMultiplier={0.5} particleSize={1.0} />
       <div className="grain-overlay" aria-hidden="true" />
@@ -55,6 +69,7 @@ function AppShell() {
         </main>
         <Footer />
       </div>
+      </div>
     </div>
   );
 }
@@ -67,4 +82,5 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
