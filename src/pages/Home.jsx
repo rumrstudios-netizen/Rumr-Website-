@@ -104,7 +104,10 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           zIndex: 2,
           pointerEvents: isActive ? "auto" : "none",
           willChange: "transform",
-          filter: "drop-shadow(0 0 25px rgba(255, 0, 0, 0.5)) drop-shadow(0 0 55px rgba(255, 0, 0, 0.3))",
+          filter: isActive
+            ? "drop-shadow(0 0 20px rgba(255, 30, 30, 0.22)) drop-shadow(0 0 45px rgba(255, 0, 0, 0.1))"
+            : "drop-shadow(0 0 12px rgba(255, 30, 30, 0.12))",
+          transition: "filter 0.5s ease",
         }}
       >
         <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -116,9 +119,9 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
               height: "31px",
               width: "clamp(130px, 12vw, 190px)",
               backgroundColor: "var(--rumr-surface)",
-              borderTop: "1px solid rgba(255, 0, 0, 0.45)",
-              borderLeft: "1px solid rgba(255, 0, 0, 0.45)",
-              borderRight: "1px solid rgba(255, 0, 0, 0.45)",
+              borderTop: "1px solid rgba(255, 59, 48, 0.25)",
+              borderLeft: "1px solid rgba(255, 59, 48, 0.25)",
+              borderRight: "1px solid rgba(255, 59, 48, 0.25)",
               borderTopLeftRadius: "10px",
               borderTopRightRadius: "10px",
               display: "flex",
@@ -147,24 +150,24 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
               width: "100%",
               height: "100%",
               backgroundColor: "var(--rumr-surface)",
-              border: "1px solid rgba(255, 0, 0, 0.45)",
+              border: "1px solid rgba(255, 59, 48, 0.25)",
               borderTopRightRadius: "20px",
               borderBottomLeftRadius: "20px",
               borderBottomRightRadius: "20px",
               borderTopLeftRadius: "0px",
               overflow: "hidden",
               cursor: "pointer",
-              boxShadow: "0 0 35px rgba(255, 0, 0, 0.35)",
+              boxShadow: "0 0 25px rgba(255, 30, 30, 0.14)",
               transition: "border-color 0.4s ease, box-shadow 0.4s ease",
             }}
             onClick={onClick}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "var(--rumr-red)";
-              e.currentTarget.style.boxShadow = "0 0 65px rgba(255,0,0,0.65)";
+              e.currentTarget.style.borderColor = "rgba(255, 59, 48, 0.55)";
+              e.currentTarget.style.boxShadow = "0 0 40px rgba(255, 30, 30, 0.3)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255, 0, 0, 0.45)";
-              e.currentTarget.style.boxShadow = "0 0 35px rgba(255, 0, 0, 0.35)";
+              e.currentTarget.style.borderColor = "rgba(255, 59, 48, 0.25)";
+              e.currentTarget.style.boxShadow = "0 0 25px rgba(255, 30, 30, 0.14)";
             }}
           >
             <motion.img
