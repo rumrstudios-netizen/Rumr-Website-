@@ -111,9 +111,10 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
       <motion.div
         style={{
           position: "relative",
-          width: "88%",
+          width: "72%",
+          maxWidth: "920px",
           aspectRatio: "16 / 10",
-          maxHeight: "85%",
+          maxHeight: "70%",
           scale,
           rotateY,
           zIndex: 2,
@@ -125,19 +126,19 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
           <div
             style={{
               position: "absolute",
-              top: "-36px",
+              top: "-30px",
               left: "0",
-              height: "37px",
-              width: "clamp(150px, 15vw, 240px)",
+              height: "31px",
+              width: "clamp(130px, 12vw, 190px)",
               backgroundColor: "var(--rumr-surface)",
               borderTop: "1px solid var(--rumr-border)",
               borderLeft: "1px solid var(--rumr-border)",
               borderRight: "1px solid var(--rumr-border)",
-              borderTopLeftRadius: "14px",
-              borderTopRightRadius: "14px",
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px",
               display: "flex",
               alignItems: "center",
-              paddingLeft: "20px",
+              paddingLeft: "16px",
               zIndex: 3,
             }}
           >
@@ -225,9 +226,9 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
             <div
               style={{
                 position: "absolute",
-                bottom: "clamp(2rem, 6vh, 4rem)",
-                left: "clamp(2rem, 5vw, 4rem)",
-                right: "clamp(2rem, 5vw, 4rem)",
+                bottom: "clamp(1.5rem, 4vh, 2.5rem)",
+                left: "clamp(1.5rem, 4vw, 2.5rem)",
+                right: "clamp(1.5rem, 4vw, 2.5rem)",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-end",
@@ -240,7 +241,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
                     display: "flex",
                     alignItems: "center",
                     gap: "12px",
-                    marginBottom: "16px",
+                    marginBottom: "12px",
                     flexWrap: "wrap",
                   }}
                 >
@@ -287,7 +288,7 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
                 </div>
                 <h3
                   style={{
-                    fontSize: "clamp(24px, 4vw, 56px)",
+                    fontSize: "clamp(22px, 3.2vw, 44px)",
                     fontWeight: 900,
                     letterSpacing: "-0.03em",
                     textTransform: "uppercase",
@@ -299,11 +300,11 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
                 </h3>
                 <p
                   style={{
-                    marginTop: "12px",
-                    fontSize: "clamp(13px, 1.4vw, 16px)",
+                    marginTop: "10px",
+                    fontSize: "clamp(12px, 1.2vw, 15px)",
                     color: "var(--rumr-text2)",
-                    maxWidth: "500px",
-                    lineHeight: 1.6,
+                    maxWidth: "440px",
+                    lineHeight: 1.55,
                   }}
                 >
                   {project.description}
@@ -311,19 +312,19 @@ function WorkCard({ project, index, totalSlides, scrollProgress, onClick, isActi
               </div>
               <div
                 style={{
-                  width: "56px",
-                  height: "56px",
+                  width: "48px",
+                  height: "48px",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
                   backgroundColor: "var(--rumr-red)",
-                  boxShadow: "0 0 30px rgba(255,0,0,0.4)",
+                  boxShadow: "0 0 25px rgba(255,0,0,0.35)",
                   transition: "transform 0.3s ease",
                 }}
               >
-                <FolderOpen size={20} className="text-black" />
+                <FolderOpen size={18} className="text-black" />
               </div>
             </div>
           </div>
