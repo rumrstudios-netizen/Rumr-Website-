@@ -43,7 +43,7 @@ body {
 }
 
 @media (pointer: fine) {
-  body, a, button, [role="button"], input, select, textarea, .cursor-pointer {
+  body, body *, a, button, [role="button"], input, select, textarea, .cursor-pointer {
     cursor: none !important;
   }
 }

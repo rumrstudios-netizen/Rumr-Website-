@@ -9,7 +9,7 @@ export default function CustomCursor() {
   const cursorRef = useRef(null);
   const hoverRef = useRef(false);
   const contentRef = useRef("");
-  
+
   const pos = useRef({ x: -100, y: -100, targetX: -100, targetY: -100 });
   const rafId = useRef(null);
 
@@ -17,25 +17,23 @@ export default function CustomCursor() {
     if (typeof window === "undefined") return;
     if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
 
-    const handleMouseMove = (e) => {
-      pos.current.targetX = e.clientX;
-      pos.current.targetY = e.clientY;
-
-      if (pos.current.x === -100) {
-        pos.current.x = e.clientX;
-        pos.current.y = e.clientY;
-        setVisible(true);
+    const checkHoverTarget = (target) => {
+      if (!target || typeof target.closest !== "function") {
+        if (hoverRef.current) {
+          hoverRef.current = false;
+          contentRef.current = "";
+          setIsHovering(false);
+          setCursorContent("");
+        }
+        return;
       }
-    };
 
-    const handleMouseOver = (e) => {
-      const target = e.target;
-      if (!target || typeof target.closest !== "function") return;
+      const interactable = target.closest(
+        "a, button, [role='button'], [data-cursor], input, select, textarea, label"
+      );
 
-      const closestInteractable = target.closest("a, button, [role='button'], [data-cursor], input, select, textarea");
-
-      if (closestInteractable) {
-        const dataCursor = closestInteractable.getAttribute("data-cursor") || "arrow";
+      if (interactable) {
+        const dataCursor = interactable.getAttribute("data-cursor") || "arrow";
         if (!hoverRef.current || contentRef.current !== dataCursor) {
           hoverRef.current = true;
           contentRef.current = dataCursor;
@@ -50,25 +48,52 @@ export default function CustomCursor() {
       }
     };
 
+    const handleMouseMove = (e) => {
+      pos.current.targetX = e.clientX;
+      pos.current.targetY = e.clientY;
+
+      if (pos.current.x === -100) {
+        pos.current.x = e.clientX;
+        pos.current.y = e.clientY;
+      }
+
+      if (!visible) setVisible(true);
+      checkHoverTarget(e.target);
+    };
+
+    const handleMouseOver = (e) => {
+      checkHoverTarget(e.target);
+    };
+
     const handleMouseLeave = () => {
       setVisible(false);
-      pos.current.x = -100;
-      pos.current.y = -100;
     };
 
-    const handleMouseEnter = () => {
+    const handleMouseEnter = (e) => {
       setVisible(true);
+      if (e) {
+        pos.current.targetX = e.clientX;
+        pos.current.targetY = e.clientY;
+      }
     };
 
-    // Ultra-fluid 60FPS position loop — Effect runs once and NEVER tears down
+    // Ultra-fluid 60FPS position loop with subpixel stabilization
     const loop = () => {
       const p = pos.current;
-      if (p.x !== -100) {
-        p.x += (p.targetX - p.x) * 0.45;
-        p.y += (p.targetY - p.y) * 0.45;
+      if (p.targetX !== -100) {
+        const dx = p.targetX - p.x;
+        const dy = p.targetY - p.y;
+
+        if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
+          p.x = p.targetX;
+          p.y = p.targetY;
+        } else {
+          p.x += dx * 0.45;
+          p.y += dy * 0.45;
+        }
 
         if (cursorRef.current) {
-          cursorRef.current.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-50%, -50%)`;
+          cursorRef.current.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
         }
       }
       rafId.current = requestAnimationFrame(loop);
@@ -88,7 +113,7 @@ export default function CustomCursor() {
       document.removeEventListener("mouseenter", handleMouseEnter);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, []);
+  }, [visible]);
 
   if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) {
     return null;
@@ -103,8 +128,13 @@ export default function CustomCursor() {
         position: "fixed",
         top: 0,
         left: 0,
+        width: 0,
+        height: 0,
         pointerEvents: "none",
-        zIndex: 9999,
+        zIndex: 99999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         opacity: visible ? 1 : 0,
         transition: "opacity 0.2s ease",
         willChange: "transform",
@@ -120,8 +150,9 @@ export default function CustomCursor() {
           boxShadow: isHovering
             ? "0 0 20px rgba(255,255,255,0.45)"
             : "0 0 8px rgba(255,255,255,0.25)",
-          transition: "width 0.22s cubic-bezier(0.16, 1, 0.3, 1), height 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease",
+          transition: "width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease",
           willChange: "width, height",
+          transform: "translateZ(0)",
         }}
       >
         {isHovering && cursorContent && (
@@ -159,3 +190,4 @@ export default function CustomCursor() {
     </div>
   );
 }
+
