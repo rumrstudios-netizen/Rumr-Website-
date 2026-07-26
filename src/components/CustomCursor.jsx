@@ -16,8 +16,6 @@ export default function CustomCursor() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Only disable on touch-only devices without hover capability (phones/tablets)
-    if (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
 
     const checkHoverTarget = (target) => {
       if (!target || typeof target.closest !== "function") {
@@ -63,6 +61,7 @@ export default function CustomCursor() {
         visibleRef.current = true;
         setVisible(true);
       }
+
       checkHoverTarget(e.target);
     };
 
@@ -84,7 +83,6 @@ export default function CustomCursor() {
       }
     };
 
-    // Ultra-fluid 60FPS position loop with subpixel stabilization
     const loop = () => {
       const p = pos.current;
       if (p.targetX !== -100) {
@@ -100,7 +98,7 @@ export default function CustomCursor() {
         }
 
         if (cursorRef.current) {
-          cursorRef.current.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
+          cursorRef.current.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-50%, -50%)`;
         }
       }
       rafId.current = requestAnimationFrame(loop);
@@ -122,10 +120,6 @@ export default function CustomCursor() {
     };
   }, []);
 
-  if (typeof window !== "undefined" && window.matchMedia("(hover: none) and (pointer: coarse)").matches) {
-    return null;
-  }
-
   const size = isHovering ? (cursorContent !== "arrow" ? 76 : 48) : 14;
 
   return (
@@ -135,62 +129,51 @@ export default function CustomCursor() {
         position: "fixed",
         top: 0,
         left: 0,
-        width: 0,
-        height: 0,
+        width: `${size}px`,
+        height: `${size}px`,
         pointerEvents: "none",
-        zIndex: 99999,
+        zIndex: 9999999,
+        borderRadius: "9999px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
+        backgroundColor: isHovering ? "rgba(255, 255, 255, 0.96)" : "rgba(255, 255, 255, 0.9)",
+        color: isHovering ? "var(--rumr-red)" : "#000",
+        boxShadow: isHovering
+          ? "0 0 20px rgba(255,255,255,0.45)"
+          : "0 0 8px rgba(255,255,255,0.25)",
         opacity: visible ? 1 : 0,
-        transition: "opacity 0.2s ease",
-        willChange: "transform",
+        transition: "width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease",
+        willChange: "transform, width, height",
+        transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
       }}
     >
-      <div
-        className="rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          minWidth: `${size}px`,
-          minHeight: `${size}px`,
-          flexShrink: 0,
-          backgroundColor: isHovering ? "rgba(255, 255, 255, 0.96)" : "rgba(255, 255, 255, 0.9)",
-          color: isHovering ? "var(--rumr-red)" : "#000",
-          boxShadow: isHovering
-            ? "0 0 20px rgba(255,255,255,0.45)"
-            : "0 0 8px rgba(255,255,255,0.25)",
-          transition: "width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.2s cubic-bezier(0.16, 1, 0.3, 1), min-height 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease",
-          willChange: "width, height",
-          transform: "translateZ(0)",
-        }}
-      >
-        {isHovering && cursorContent && (
-          <div
-            className="flex items-center justify-center"
-            style={{
-              animation: "rumrCursorIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-            }}
-          >
-            {cursorContent === "arrow" ? (
-              <ArrowUpRight size={20} strokeWidth={2.5} />
-            ) : (
-              <span
-                style={{
-                  fontSize: "10px",
-                  fontWeight: 800,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  paddingLeft: "1px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {cursorContent}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+      {isHovering && cursorContent && (
+        <div
+          className="flex items-center justify-center"
+          style={{
+            animation: "rumrCursorIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+          }}
+        >
+          {cursorContent === "arrow" ? (
+            <ArrowUpRight size={20} strokeWidth={2.5} />
+          ) : (
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 800,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                paddingLeft: "1px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {cursorContent}
+            </span>
+          )}
+        </div>
+      )}
       <style>{`
         @keyframes rumrCursorIn {
           from { opacity: 0; transform: scale(0.6); }
@@ -200,6 +183,7 @@ export default function CustomCursor() {
     </div>
   );
 }
+
 
 
 

@@ -45,9 +45,9 @@ function AppShell() {
       className="min-h-screen antialiased relative"
       style={{ backgroundColor: "var(--rumr-bg)", color: "var(--rumr-text)" }}
     >
+      <CustomCursor />
       {introActive && <OpeningAnimation onDone={handleIntroDone} />}
       <div className={justRevealed ? "rumr-site-reveal" : ""}>
-      <CustomCursor />
       <CosmicDust particleCount={160} speedMultiplier={0.5} particleSize={1.0} />
       <div className="grain-overlay" aria-hidden="true" />
       <Navigation />
