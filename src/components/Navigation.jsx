@@ -468,59 +468,62 @@ export default function Navigation() {
 
             {/* Big nav links */}
             <div className="flex-1 flex flex-col justify-center relative z-10">
-              {SITE_CONFIG.navigation.map((item, index) => (
-                <motion.a
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  initial={{ x: -30, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.22 + index * 0.07, ease: "easeOut" }}
-                  className="group flex items-center gap-5"
-                  style={{
-                    fontSize: "clamp(44px, 9vw, 88px)",
-                    fontWeight: 900,
-                    letterSpacing: "-0.04em",
-                    textTransform: "uppercase",
-                    color: "var(--rumr-text)",
-                    textDecoration: "none",
-                    lineHeight: 1.1,
-                    padding: "6px 0",
-                    borderBottom: "1px solid rgba(44,74,64,0.25)",
-                    transition: "color 0.25s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "var(--rumr-green-soft)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "var(--rumr-text)")
-                  }
-                >
-                  <span
+              {SITE_CONFIG.navigation.map((item, index) => {
+                const MotionLink = motion(Link);
+                return (
+                  <MotionLink
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsOpen(false)}
+                    initial={{ x: -30, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.22 + index * 0.07, ease: "easeOut" }}
+                    className="group flex items-center gap-5"
                     style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.2em",
-                      color: "var(--rumr-red)",
-                      minWidth: "28px",
+                      fontSize: "clamp(44px, 9vw, 88px)",
+                      fontWeight: 900,
+                      letterSpacing: "-0.04em",
+                      textTransform: "uppercase",
+                      color: "var(--rumr-text)",
+                      textDecoration: "none",
+                      lineHeight: 1.1,
+                      padding: "6px 0",
+                      borderBottom: "1px solid rgba(44,74,64,0.25)",
+                      transition: "color 0.25s ease",
                     }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "var(--rumr-green-soft)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = "var(--rumr-text)")
+                    }
                   >
-                    0{index + 1}
-                  </span>
-                  {item.name}
-                  <ArrowRight
-                    size={24}
-                    style={{
-                      color: "var(--rumr-red)",
-                      marginLeft: "auto",
-                      opacity: 0,
-                      transition: "opacity 0.2s, transform 0.2s",
-                      transform: "translateX(-8px)",
-                    }}
-                    className="group-hover:opacity-100"
-                  />
-                </motion.a>
-              ))}
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        letterSpacing: "0.2em",
+                        color: "var(--rumr-red)",
+                        minWidth: "28px",
+                      }}
+                    >
+                      0{index + 1}
+                    </span>
+                    {item.name}
+                    <ArrowRight
+                      size={24}
+                      style={{
+                        color: "var(--rumr-red)",
+                        marginLeft: "auto",
+                        opacity: 0,
+                        transition: "opacity 0.2s, transform 0.2s",
+                        transform: "translateX(-8px)",
+                      }}
+                      className="group-hover:opacity-100"
+                    />
+                  </MotionLink>
+                );
+              })}
             </div>
 
             {/* Footer strip */}

@@ -44,6 +44,11 @@ export default function CosmicDust({
       const pY = initRandom ? Math.random() * height : height + 10;
       const baseColor = colors[Math.floor(Math.random() * colors.length)];
 
+      const hx = new Float32Array(5);
+      const hy = new Float32Array(5);
+      hx[0] = pX;
+      hy[0] = pY;
+
       return {
         x: pX,
         y: pY,
@@ -52,7 +57,10 @@ export default function CosmicDust({
         size: (Math.random() * 0.8 + 0.6) * particleSize,
         color: baseColor,
         opacity: Math.random() * 0.4 + 0.4,
-        history: [],
+        hx,
+        hy,
+        head: 1,
+        count: 1,
       };
     };
 
@@ -143,20 +151,24 @@ export default function CosmicDust({
         p.x += p.vx;
         p.y += p.vy;
 
-        p.history.push({ x: p.x, y: p.y });
-        if (p.history.length > 5) p.history.shift();
+        p.hx[p.head] = p.x;
+        p.hy[p.head] = p.y;
+        p.head = (p.head + 1) % 5;
+        if (p.count < 5) p.count++;
 
         if (p.y < -10 || p.x < -10 || p.x > width + 10) {
           particles[index] = createParticle(false);
           continue;
         }
 
-        // Draw particle trail (clean lines without glow filters)
-        if (p.history.length > 1) {
+        // Draw particle trail (clean lines using zero-alloc ring buffer)
+        if (p.count > 1) {
           ctx.beginPath();
-          ctx.moveTo(p.history[0].x, p.history[0].y);
-          for (let i = 1; i < p.history.length; i++) {
-            ctx.lineTo(p.history[i].x, p.history[i].y);
+          const startIdx = (p.head - p.count + 5) % 5;
+          ctx.moveTo(p.hx[startIdx], p.hy[startIdx]);
+          for (let i = 1; i < p.count; i++) {
+            const idx = (startIdx + i) % 5;
+            ctx.lineTo(p.hx[idx], p.hy[idx]);
           }
           ctx.strokeStyle = `${p.color}${p.opacity * 0.3})`;
           ctx.lineWidth = p.size * 0.6;

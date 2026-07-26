@@ -195,6 +195,13 @@ img {
   overflow: hidden;
   font-family: 'Inter', system-ui, sans-serif;
   user-select: none;
+  transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), background-color 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rumr-intro--reveal {
+  opacity: 0;
+  background: transparent;
+  pointer-events: none;
 }
 
 /* Base black backdrop layer + radial iris mask */
@@ -213,6 +220,9 @@ img {
     transparent var(--rumr-reveal-r),
     #000 calc(var(--rumr-reveal-r) + 2%)
   );
+  will-change: transform, opacity, mask-image;
+  transform: scale(1);
+  opacity: 1;
 }
 
 .rumr-intro--fade-in {
@@ -238,8 +248,10 @@ img {
 }
 
 .rumr-intro--reveal .rumr-intro__mask {
-  transition: --rumr-reveal-r 1400ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: --rumr-reveal-r 500ms cubic-bezier(0.16, 1, 0.3, 1), opacity 500ms ease, transform 500ms ease;
   --rumr-reveal-r: 160%;
+  opacity: 0;
+  transform: scale(1.05);
 }
 
 @keyframes rumrIntroFadeIn {
@@ -524,6 +536,51 @@ img {
   100% { opacity: 0; transform: scale(1.4); }
 }
 
+/* Natural Optical Shockwave Ripple */
+.rumr-intro__wave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  opacity: 0;
+  pointer-events: none;
+  border: 1.5px solid rgba(72, 209, 173, 0.65);
+  box-shadow: 0 0 35px rgba(72, 209, 173, 0.4), inset 0 0 25px rgba(255, 59, 48, 0.3);
+  will-change: transform, opacity;
+}
+
+.rumr-intro__wave--secondary {
+  border-color: rgba(255, 59, 48, 0.55);
+  box-shadow: 0 0 45px rgba(255, 59, 48, 0.4);
+}
+
+.rumr-intro--shutter .rumr-intro__wave,
+.rumr-intro--reveal .rumr-intro__wave {
+  animation: rumrShockwave 750ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.rumr-intro--shutter .rumr-intro__wave--secondary,
+.rumr-intro--reveal .rumr-intro__wave--secondary {
+  animation: rumrShockwave 900ms cubic-bezier(0.16, 1, 0.3, 1) 90ms forwards;
+}
+
+@keyframes rumrShockwave {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.15);
+  }
+  30% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(22);
+  }
+}
+
 /* Skip Button */
 .rumr-intro__skip {
   position: absolute;
@@ -558,12 +615,12 @@ img {
 
 /* Reveal Website Beneath Iris */
 .rumr-site-reveal {
-  animation: rumrSiteReveal 1400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: rumrSiteReveal 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes rumrSiteReveal {
-  from { opacity: 0.4; transform: scale(1.04); filter: blur(10px); }
-  to   { opacity: 1;   transform: scale(1);    filter: blur(0); }
+  from { opacity: 0.7; transform: scale(1.02); }
+  to   { opacity: 1;   transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -15,13 +15,13 @@ import React, { useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "rumr_intro_played";
 
-// Timings in milliseconds
-const T_FADE_IN = 500;
-const T_HUD = 1900;
-const T_FOCUS = 1400;
-const T_SHUTTER = 260;
-const T_REVEAL = 1400;
-const SKIP_APPEARS_AT = 600;
+// Timings in milliseconds — Snappy cinematic camera shutter sequence
+const T_FADE_IN = 300;
+const T_HUD = 1100;
+const T_FOCUS = 800;
+const T_SHUTTER = 200;
+const T_REVEAL = 500;
+const SKIP_APPEARS_AT = 400;
 
 export default function OpeningAnimation({ onDone }) {
   const alreadyPlayed =
@@ -86,7 +86,9 @@ export default function OpeningAnimation({ onDone }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Timecode readout (24fps timecode: MM:SS:FF:SF)
+  const timecodeRef = useRef(null);
+
+  // Timecode readout (24fps timecode: MM:SS:FF:SF) — Direct DOM update to prevent 60FPS React state re-renders
   useEffect(() => {
     if (phase !== "hud" && phase !== "focus") return;
     if (!startRef.current) startRef.current = performance.now();
@@ -97,11 +99,15 @@ export default function OpeningAnimation({ onDone }) {
       const ss = String(Math.floor(totalSec % 60)).padStart(2, "0");
       const ff = String(Math.floor((elapsed % 1000) / 41.6)).padStart(2, "0");
       const sub = String(Math.floor((elapsed % 41.6) / 4.16)).padStart(2, "0");
-      setTimecode(`${mm}:${ss}:${ff}:${sub}`);
+      if (timecodeRef.current) {
+        timecodeRef.current.textContent = `${mm}:${ss}:${ff}:${sub}`;
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [phase]);
 
   if (phase === "done") return null;
@@ -135,7 +141,7 @@ export default function OpeningAnimation({ onDone }) {
             <span className="rumr-intro__rec-dot" />
             REC [STANDBY]
           </div>
-          <div className="rumr-intro__timecode">{timecode}</div>
+          <div className="rumr-intro__timecode" ref={timecodeRef}>00:00:00:00</div>
           <div className="rumr-intro__badge">8K 12-BIT RAW</div>
         </div>
 
@@ -167,6 +173,10 @@ export default function OpeningAnimation({ onDone }) {
 
       {/* Shutter Burst Flash */}
       <div className="rumr-intro__flash" />
+
+      {/* Natural Optical Shockwave Ripple */}
+      <div className="rumr-intro__wave" />
+      <div className="rumr-intro__wave rumr-intro__wave--secondary" />
 
       {/* Skip Button */}
       {showSkip && phase !== "shutter" && phase !== "reveal" && (
