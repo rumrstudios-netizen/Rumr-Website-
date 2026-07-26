@@ -9,6 +9,7 @@ export default function CustomCursor() {
   const cursorRef = useRef(null);
   const hoverRef = useRef(false);
   const contentRef = useRef("");
+  const visibleRef = useRef(false);
 
   const pos = useRef({ x: -100, y: -100, targetX: -100, targetY: -100 });
   const rafId = useRef(null);
@@ -57,7 +58,10 @@ export default function CustomCursor() {
         pos.current.y = e.clientY;
       }
 
-      if (!visible) setVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setVisible(true);
+      }
       checkHoverTarget(e.target);
     };
 
@@ -66,10 +70,12 @@ export default function CustomCursor() {
     };
 
     const handleMouseLeave = () => {
+      visibleRef.current = false;
       setVisible(false);
     };
 
     const handleMouseEnter = (e) => {
+      visibleRef.current = true;
       setVisible(true);
       if (e) {
         pos.current.targetX = e.clientX;
@@ -113,7 +119,7 @@ export default function CustomCursor() {
       document.removeEventListener("mouseenter", handleMouseEnter);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [visible]);
+  }, []);
 
   if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) {
     return null;
@@ -190,4 +196,5 @@ export default function CustomCursor() {
     </div>
   );
 }
+
 
