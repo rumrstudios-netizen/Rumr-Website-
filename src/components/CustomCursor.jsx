@@ -16,7 +16,8 @@ export default function CustomCursor() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
+    // Only disable on touch-only devices without hover capability (phones/tablets)
+    if (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
 
     const checkHoverTarget = (target) => {
       if (!target || typeof target.closest !== "function") {
@@ -121,7 +122,7 @@ export default function CustomCursor() {
     };
   }, []);
 
-  if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) {
+  if (typeof window !== "undefined" && window.matchMedia("(hover: none) and (pointer: coarse)").matches) {
     return null;
   }
 
@@ -147,16 +148,19 @@ export default function CustomCursor() {
       }}
     >
       <div
-        className="rounded-full flex items-center justify-center overflow-hidden"
+        className="rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
         style={{
           width: `${size}px`,
           height: `${size}px`,
+          minWidth: `${size}px`,
+          minHeight: `${size}px`,
+          flexShrink: 0,
           backgroundColor: isHovering ? "rgba(255, 255, 255, 0.96)" : "rgba(255, 255, 255, 0.9)",
           color: isHovering ? "var(--rumr-red)" : "#000",
           boxShadow: isHovering
             ? "0 0 20px rgba(255,255,255,0.45)"
             : "0 0 8px rgba(255,255,255,0.25)",
-          transition: "width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease",
+          transition: "width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.2s cubic-bezier(0.16, 1, 0.3, 1), min-height 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease",
           willChange: "width, height",
           transform: "translateZ(0)",
         }}
@@ -196,5 +200,6 @@ export default function CustomCursor() {
     </div>
   );
 }
+
 
 
